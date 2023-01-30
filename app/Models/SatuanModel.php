@@ -4,13 +4,13 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class BarangModel extends Model
+class SatuanModel extends Model
 {
-    protected $table = 'barang';
-    protected $primaryKey = 'idbrg';
+    protected $table = 'satuan';
+    protected $primaryKey = 'idsatuan';
     protected $returnType = 'array';
     protected $useSoftDeletes = false;
-    protected $allowedFields = ['nama', 'stok', 'fk_idsatuan'];
+    protected $allowedFields = ['nama'];
     protected $useTimestamps = true;
     protected $dateFormat = 'datetime';
     protected $createdField = 'created_at';

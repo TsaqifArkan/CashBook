@@ -14,6 +14,10 @@
     <link rel="stylesheet" href="<?= base_url(); ?>/vendor/iconly/bold.css">
 
     <link rel="stylesheet" href="<?= base_url(); ?>/vendor/perfect-scrollbar/perfect-scrollbar.css">
+
+    <!-- DSelect CSS -->
+    <link href="<?= base_url(); ?>/css/dselect.css" rel="stylesheet">
+
     <!-- <link rel="stylesheet" href="assets/vendors/bootstrap-icons/bootstrap-icons.css"> -->
     <link rel="stylesheet" href="<?= base_url(); ?>/css/app.css">
     <!-- Font Awesome Icons v6.2.1 -->
@@ -24,6 +28,8 @@
     <link href="<?= base_url(); ?>/css/ave-style.css" rel="stylesheet">
     <!-- Jquery Default File -->
     <script src="<?= base_url(); ?>/vendor/jquery/jquery.min.js"></script>
+    <!-- DSelect JS -->
+    <script src="<?= base_url(); ?>/js/dselect.js"></script>
 </head>
 
 <body class="bg-main">
@@ -31,9 +37,9 @@
         <?= $this->include('templates/sidebar'); ?>
         <div id="main">
             <!-- Main Content -->
-            <header class="mb-3">
+            <header class="">
                 <a href="#" class="burger-btn d-block d-xl-none">
-                    <i class="fa-solid fa-bars"></i>
+                    <i class="fa-solid fa-fw fa-bars"></i>
                     <!-- <i class="bi bi-justify fs-3"></i> -->
                 </a>
             </header>
@@ -42,6 +48,11 @@
             <?= $this->include('templates/footer'); ?>
         </div>
     </div>
+
+    <!-- Logout Modal-->
+    <?= $this->include('auth/logout'); ?>
+    <!-- End of Logout Modal -->
+
     <script src="<?= base_url(); ?>/vendor/perfect-scrollbar/perfect-scrollbar.min.js"></script>
     <script src="<?= base_url(); ?>/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
@@ -50,12 +61,16 @@
 
     <script src="<?= base_url(); ?>/js/main.js"></script>
 
+
+
     <!-- Sweet Alert Javascript and JQuery (include CSS) -->
     <script src="<?= base_url(); ?>/js/sweetalert2.all.min.js"></script>
     <!-- JQuery Datatable -->
     <script src="<?= base_url(); ?>/vendor/datatables/jquery.dataTables.min.js"></script>
     <!-- JS DataTable -->
     <script src="<?= base_url(); ?>/vendor/datatables/datatables.min.js"></script>
+    <!-- Aveneraa JS File -->
+    <script src="<?= base_url(); ?>/js/ave-script.js"></script>
 </body>
 
 </html>

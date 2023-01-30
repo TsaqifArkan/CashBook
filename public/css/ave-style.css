@@ -1,4 +1,18 @@
 /* CASHBOOK APP */
+/* Login Page Configuration */
+.login-bg-ave {
+	background-color: #F1D3B3;
+}
+
+.photo-login-ave {
+	background-image: url("../img/curved9.jpg");
+	background-size: cover;
+}
+
+.bg-btn-login-ave {
+	background-color: #EF9A53 !important;
+}
+
 .app-logo {
     color: #E38B29;
 }
@@ -9,6 +23,30 @@
 
 .nameapp-ave:hover {
 	color: #FFC090;
+}
+
+a.burger-btn {
+	color:#E38B29;
+}
+
+a.sidebar-hide {
+	color:#E38B29;
+}
+
+.sidebar-wrapper{
+	width:270px;
+	height:100vh;
+	position:fixed;
+	top:0;
+	z-index:10;
+	overflow-y:auto;
+	background-color:#fff;
+	bottom:0;
+	transition:left .5s ease-out
+}
+
+.sidebar-wrapper .menu .sidebar-link i, .sidebar-wrapper .menu .sidebar-link svg {
+    color: #E38B29;
 }
 
 .bg-sidebar-ave {
@@ -24,7 +62,8 @@
 }
 
 .bg-foot-ave {
-	background-color: #FFF5E1;
+	/* background-color: #FFF5E1; */
+	background-color: #FDEEDC;
 }
 
 .ave-bg-th {
@@ -38,14 +77,28 @@
     margin-left: -5px;
 }
 
-/* END OF CASHBOOK APP */
-
-/* Login Page Configuration */
-.login-bg-ave {
-	background-color: #F0DBDB;
+.alert-breadcrumb-ave {
+	background-color: #FFD8A9;
 }
 
-.page-header {
+.a-bread-ave{
+	color: #E38B29;
+}
+
+.a-bread-ave:hover{
+	color: #FFFFFF;
+}
+
+#main{
+	margin-left:270px;
+	padding:1.5rem
+}
+
+/* END OF CASHBOOK APP */
+
+
+
+/* .page-header {
 	padding: 0;
 	position: relative;
 	overflow: hidden;
@@ -54,7 +107,7 @@
 	background-size: cover;
 	background-position: 50%;
 	background-image: url("../img/curved8.jpg");
-}
+} */
   
 .page-header .container {
 	z-index: 1;
@@ -112,7 +165,7 @@
 }
 
 .head-no {
-    max-width: 30px;
+    max-width: 40px;
 }
 
 .head-aksi-klas {
@@ -125,7 +178,7 @@
 
 /* Profile Card Layout for USER */
 .bg-jumbotron-ave {
-    background-color: #E3F6FF;
+    background-color: #F5D5AE;
 }
 
 .usr-card {

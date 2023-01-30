@@ -1,34 +1,18 @@
 <!-- Modal -->
-<div class="modal fade" id="modalTambahBarang" tabindex="-1" aria-labelledby="judulModalBarang" aria-hidden="true">
+<div class="modal fade" id="modalTambahSatuan" tabindex="-1" aria-labelledby="judulModalSatuan" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="judulModalBarang">Tambah Data Barang</h1>
+                <h1 class="modal-title fs-5" id="judulModalSatuan">Tambah Satuan</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <?= form_open('barang/tambah', ['class' => 'formBarang']); ?>
+            <?= form_open('satuan/tambah', ['class' => 'formSatuan']); ?>
             <div class="modal-body">
                 <?= csrf_field(); ?>
                 <div class="form-group mb-3">
-                    <label for="nama" class="form-label">Nama Barang</label>
+                    <label for="nama" class="form-label">Nama Satuan</label>
                     <input type="text" class="form-control" name="nama" id="nama">
                     <div class="invalid-feedback errorNama"></div>
-                </div>
-                <div class="form-group mb-3">
-                    <label for="stok" class="form-label">Stok</label>
-                    <input type="text" class="form-control" name="stok" id="stok">
-                    <div class="invalid-feedback errorStok"></div>
-                </div>
-                <div class="form-group mb-3">
-                    <label for="satuan" class="form-label">Satuan</label>
-                    <select class="form-select" id="satuan" name="satuan">
-                        <option value="" disabled selected>--Pilih Satuan--</option>
-                        <?php foreach ($satuan as $s): ?>
-                            <option value="<?= esc($s['idsatuan']); ?>"><?= esc($s['nama']); ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                    <div class="invalid-feedback errorSatuan"></div>
                 </div>
             </div>
             <div class="modal-footer">
@@ -40,12 +24,12 @@
     </div>
 </div>
 <script>
-    // Konfigurasi Modal Tambah Barang di modaltambah.php
+    // Konfigurasi Modal Tambah Satuan di modaltambah.php
     $(document).ready(function () {
-        $('#modalTambahBarang').on('shown.bs.modal', function () {
+        $('#modalTambahSatuan').on('shown.bs.modal', function () {
             $('#nama').focus();
         })
-        $('.formBarang').submit(function (e) {
+        $('.formSatuan').submit(function (e) {
             e.preventDefault();
             $.ajax({
                 type: "POST",
@@ -71,22 +55,6 @@
                             $('#nama').addClass('is-valid');
                             $('.errorNama').html('');
                         }
-                        if (response.error.stok) {
-                            $('#stok').addClass('is-invalid');
-                            $('.errorStok').html(response.error.stok);
-                        } else {
-                            $('#stok').removeClass('is-invalid');
-                            $('#stok').addClass('is-valid');
-                            $('.errorStok').html('');
-                        }
-                        if (response.error.satuan) {
-                            $('#satuan').addClass('is-invalid');
-                            $('.errorSatuan').html(response.error.satuan);
-                        } else {
-                            $('#satuan').removeClass('is-invalid');
-                            $('#satuan').addClass('is-valid');
-                            $('.errorSatuan').html('');
-                        }
 
                     } else {
                         Swal.fire({
@@ -94,8 +62,8 @@
                             title: 'SUCCESS !',
                             text: response.flashData
                         });
-                        $('#modalTambahBarang').modal('hide');
-                        tableBarang();
+                        $('#modalTambahSatuan').modal('hide');
+                        tableSatuan();
                     }
                 },
                 error: function (xhr, ajaxOptions, thrownError) {

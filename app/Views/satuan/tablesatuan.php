@@ -1,13 +1,10 @@
 <div class="table-responsive">
-    <table class="table table-bordered table-hover" id="dataTable-Akun">
+    <table class="table table-bordered table-hover" id="dataTable-Satuan">
         <thead class="ave-bg-th">
             <tr>
                 <th class="text-uppercase fw-bold head-no">No</th>
-                <th class="text-uppercase fw-bold">Nama Barang</th>
-                <th class="text-uppercase fw-bold">Kode Barang</th>
-                <th class="text-uppercase fw-bold">Posisi</th>
-                <th class="text-uppercase fw-bold">Saldo Sekarang</th>
-                <th class="text-uppercase fw-bold head-aksi">Aksi</th>
+                <th class="text-uppercase fw-bold">Nama Satuan</th>
+                <th class="text-uppercase fw-bold head-aksi-klas">Aksi</th>
             </tr>
         </thead>
         <tbody>
@@ -15,18 +12,12 @@
                 <tr>
                     <td><?= $i + 1; ?></td>
                     <td><?= esc($data['nama']); ?></td>
-                    <td><?= esc($data['kode']); ?></td>
-                    <td><?= esc($data['posisi']); ?></td>
-                    <td><?= esc($data['saldonow']); ?></td>
                     <td>
-                        <a href="<?= base_url('akun/detail') . '/' . esc($data['idakun']); ?>" class="btn btn-info btn-sm"
-                            data-bs-toggle="tooltip" data-bs-placement="bottom" title="Detail"><i
-                                class="fa-solid fa-circle-info"></i></a>
                         <button class="btn btn-warning btn-sm" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                            title="Edit" onclick="ubah('<?= esc($data['idakun']); ?>')"><i
+                            title="Edit" onclick="ubah('<?= esc($data['idsatuan']); ?>')"><i
                                 class="fa-solid fa-pen-to-square"></i></button>
                         <button class="btn btn-danger btn-sm" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                            title="Hapus" onclick="hapus('<?= esc($data['idakun']); ?>')"><i
+                            title="Hapus" onclick="hapus('<?= esc($data['idsatuan']); ?>')"><i
                                 class="fa-solid fa-trash"></i></button>
                     </td>
                 </tr>
@@ -36,7 +27,7 @@
 </div>
 <script>
     $(document).ready(function () {
-        $('#dataTable-Akun').DataTable({
+        $('#dataTable-Satuan').DataTable({
             "pageLength": 25,
             "columnDefs": [
                 {
@@ -56,15 +47,15 @@
     function ubah(id) {
         $.ajax({
             type: "POST",
-            url: "<?= base_url('akun/formedit'); ?>",
+            url: "<?= base_url('satuan/formedit'); ?>",
             data: {
                 id: id
             },
             dataType: "JSON",
             success: function (response) {
                 if (response.data) {
-                    $('.viewModalAkun').html(response.data).show();
-                    $('#modalEditAkun').modal('show');
+                    $('.viewModalSatuan').html(response.data).show();
+                    $('#modalEditSatuan').modal('show');
                 }
             },
             error: function (xhr, ajaxOptions, thrownError) {
@@ -90,7 +81,7 @@
             if (result.isConfirmed) {
                 $.ajax({
                     type: "POST",
-                    url: "<?= base_url('akun/delete'); ?>",
+                    url: "<?= base_url('satuan/delete'); ?>",
                     data: {
                         id: id
                     },
@@ -102,7 +93,7 @@
                                 title: 'SUCCESS !',
                                 text: response.flashData
                             })
-                            tableAkun();
+                            tableSatuan();
                         }
                     },
                     error: function (xhr, ajaxOptions, thrownError) {

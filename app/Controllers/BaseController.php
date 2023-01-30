@@ -43,6 +43,7 @@ abstract class BaseController extends Controller
      */
     // protected $session;
     protected $validation;
+    protected $yearnow;
 
     /**
      * Constructor.
@@ -56,5 +57,6 @@ abstract class BaseController extends Controller
 
         // E.g.: $this->session = \Config\Services::session();
         $this->validation = \Config\Services::validation();
+        $this->yearnow = session()->get('ann');
     }
 }

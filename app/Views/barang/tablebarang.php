@@ -4,6 +4,8 @@
             <tr>
                 <th class="text-uppercase fw-bold head-no">No</th>
                 <th class="text-uppercase fw-bold">Nama Barang</th>
+                <th class="text-uppercase fw-bold">Stok</th>
+                <th class="text-uppercase fw-bold">Satuan</th>
                 <th class="text-uppercase fw-bold head-aksi-klas">Aksi</th>
             </tr>
         </thead>
@@ -12,6 +14,8 @@
                 <tr>
                     <td><?= $i + 1; ?></td>
                     <td><?= esc($data['nama']); ?></td>
+                    <td><?= esc($data['stok']); ?></td>
+                    <td><?= esc($data['namaSatuan']); ?></td>
                     <td>
                         <a href="<?= base_url('barang/detail') . '/' . esc($data['idbrg']); ?>" class="btn btn-info btn-sm"
                             data-bs-toggle="tooltip" data-bs-placement="bottom" title="Detail"><i

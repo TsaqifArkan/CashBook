@@ -3,21 +3,14 @@
 
 <?php //echo dd($datas); ?>
 
-<div class="alert alert-breadcrumb-ave" role="alert">
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb mb-0 fs-6">
-            <li class="breadcrumb-item active" aria-current="page">Barang</li>
-        </ol>
-    </nav>
-</div>
-
 <div class="container-fluid">
     <div class="row justify-content-center">
-        <div class="col-8">
+        <div class="col-6">
+
             <!-- Page Heading -->
             <div class="row my-2">
                 <div class="col">
-                    <h1 class="h3 text-gray-800">Daftar Data Barang</h1>
+                    <h1 class="h3 text-gray-800">Daftar Satuan Barang</h1>
                 </div>
             </div>
 
@@ -25,10 +18,10 @@
                 <div class="col">
                     <!-- Button trigger modal -->
                     <button type="button"
-                        class="btn btn-success tombolTambahBarang d-flex justify-content-between align-items-center"
-                        data-bs-target="#modalTambahBarang">
+                        class="btn btn-success tombolTambahSatuan d-flex justify-content-between align-items-center"
+                        data-bs-target="#modalTambahSatuan">
                         <span class="me-1"><i class="fa-solid fa-fw fa-circle-plus"></i></span>
-                        <span>Tambah Data Barang</span>
+                        <span>Tambah Satuan</span>
                     </button>
                 </div>
             </div>
@@ -37,10 +30,10 @@
                 <div class="col-12">
                     <div class="card shadow mb-4">
                         <div class="card-header py-2">
-                            <h6 class="m-1 fw-bold text-uppercase">Tabel Barang</h6>
+                            <h6 class="m-1 fw-bold text-uppercase">Tabel Satuan</h6>
                         </div>
                         <div class="card-body">
-                            <div class="sectiondatabarang">
+                            <div class="sectiondatasatuan">
 
                             </div>
                         </div>
@@ -50,15 +43,15 @@
         </div>
     </div>
 </div>
-<div class="viewModalBarang" style="display: none;"></div>
+<div class="viewModalSatuan" style="display: none;"></div>
 
 <script>
-    function tableBarang() {
+    function tableSatuan() {
         $.ajax({
-            url: "<?= base_url('barang/getData'); ?>",
+            url: "<?= base_url('satuan/getData'); ?>",
             dataType: "JSON",
             success: function (response) {
-                $('.sectiondatabarang').html(response.data);
+                $('.sectiondatasatuan').html(response.data);
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 // alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
@@ -69,17 +62,17 @@
         });
     }
 
-    // Konfigurasi Modal Tambah Barang di index.php (barang)
+    // Konfigurasi Modal Tambah Satuan di index.php (satuan)
     $(document).ready(function () {
-        tableBarang();
-        $('.tombolTambahBarang').click(function (e) {
+        tableSatuan();
+        $('.tombolTambahSatuan').click(function (e) {
             e.preventDefault();
             $.ajax({
-                url: "<?= base_url('barang/formtambah'); ?>",
+                url: "<?= base_url('satuan/formtambah'); ?>",
                 dataType: "JSON",
                 success: function (response) {
-                    $('.viewModalBarang').html(response.data).show();
-                    $('#modalTambahBarang').modal('show');
+                    $('.viewModalSatuan').html(response.data).show();
+                    $('#modalTambahSatuan').modal('show');
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
                     // alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);

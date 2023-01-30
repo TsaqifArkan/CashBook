@@ -3,16 +3,18 @@
 namespace App\Controllers;
 
 use App\Models\AkunModel;
+use App\Models\JurnalModel;
 
 class Akun extends BaseController
 {
-    protected $akunModel, $db, $builder;
+    protected $akunModel, $db, $builder, $jurnalModel;
 
     public function __construct()
     {
         $this->akunModel = new AkunModel();
         $this->db = \Config\Database::connect();
         $this->builder = $this->db->table('akun');
+        $this->jurnalModel = new JurnalModel();
     }
 
     public function index()
@@ -24,7 +26,18 @@ class Akun extends BaseController
     public function getData()
     {
         if ($this->request->isAJAX()) {
-            $data['datas'] = $this->akunModel->findAll();
+            $dataAkun = $this->akunModel->findAll();
+            // Count Saldo Sekarang
+            foreach ($dataAkun as $i => $a) {
+                $idakun = $a['idakun'];
+                $saldoNow = $a['saldoawal'];
+                $dataJurnal = $this->jurnalModel->builder()->select('debit, kredit')->where('fk_idakun', $idakun)->get()->getResultArray();
+                foreach ($dataJurnal as $b) {
+                    $saldoNow += ($b['debit'] != 0) ? $b['debit'] : $b['kredit'] * -1;
+                }
+                $dataAkun[$i]['saldonow'] = $saldoNow;
+            }
+            $data['datas'] = $dataAkun;
             $msg['data'] = view('akun/tableakun', $data);
             echo json_encode($msg);
         }
@@ -186,5 +199,19 @@ class Akun extends BaseController
             $msg['flashData'] = 'Data akun berhasil dihapus.';
             echo json_encode($msg);
         }
+    }
+
+    public function detail($id = 0)
+    {
+        $data['title'] = 'Detail Akun';
+        $data['data'] = $this->jurnalModel->builder()->select('*')->where('fk_idakun', $id)->get()->getResultArray();
+        $data['init'] = $this->akunModel->builder()->select('saldonormal, saldoawal')->where('idakun', $id)->get()->getResultArray()[0];
+        // Count Saldo
+        $saldo = $data['init']['saldoawal'];
+        foreach ($data['data'] as $i => $d) {
+            $saldo += ($d['debit'] != 0) ? $d['debit'] : $d['kredit'] * -1;
+            $data['data'][$i]['saldo'] = $saldo;
+        }
+        return view('akun/detail', $data);
     }
 }
