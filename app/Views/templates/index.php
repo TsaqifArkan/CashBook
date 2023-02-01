@@ -18,6 +18,7 @@
     <!-- DSelect CSS -->
     <link href="<?= base_url(); ?>/css/dselect.css" rel="stylesheet">
 
+
     <!-- <link rel="stylesheet" href="assets/vendors/bootstrap-icons/bootstrap-icons.css"> -->
     <link rel="stylesheet" href="<?= base_url(); ?>/css/app.css">
     <!-- Font Awesome Icons v6.2.1 -->
@@ -30,6 +31,11 @@
     <script src="<?= base_url(); ?>/vendor/jquery/jquery.min.js"></script>
     <!-- DSelect JS -->
     <script src="<?= base_url(); ?>/js/dselect.js"></script>
+
+    <!-- Select2 CSS -->
+    <link href="<?= base_url(); ?>/css/select2.min.css" rel="stylesheet">
+    <!-- Select2 JS -->
+    <script src="<?= base_url(); ?>/js/select2.min.js"></script>
 </head>
 
 <body class="bg-main">
@@ -60,8 +66,6 @@
     <!-- <script src="<?php // echo base_url(); ?>/js/pages/dashboard.js"></script> -->
 
     <script src="<?= base_url(); ?>/js/main.js"></script>
-
-
 
     <!-- Sweet Alert Javascript and JQuery (include CSS) -->
     <script src="<?= base_url(); ?>/js/sweetalert2.all.min.js"></script>

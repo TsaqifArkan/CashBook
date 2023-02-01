@@ -88,7 +88,7 @@ class Jurnal extends BaseController
     {
         $data['title'] = 'Tambah Transaksi';
         // $data['validation'] = $this->validation;
-        // Get data Akun from DB
+        // Get data Barang from DB
         $dataBrg = $this->barangModel->builder()->select('idbrg, nama, stok, fk_idsatuan')->get()->getResultArray();
         foreach ($dataBrg as $i => $b) {
             $dataSat = $this->satuanModel->builder()->select('nama')->where('idsatuan', $b['fk_idsatuan'])->get()->getResultArray()[0];
@@ -125,7 +125,6 @@ class Jurnal extends BaseController
             if (isset($arrayPost)) {
                 $stokBrg = $arrayPost['stok'];
             }
-            // $p = "NATSUKAWA MASUZU";
             // if (!empty($jmlPost)) {
             //     if ($mutPost == 'D') {
             //         $stokBrg -= $jmlPost;
@@ -134,7 +133,6 @@ class Jurnal extends BaseController
             //     }
             // }
         }
-        // dd($p);
 
         // // dd($_POST, $arrayPost);
         // $idBrg = $this->request->getPost('barang');
@@ -175,7 +173,7 @@ class Jurnal extends BaseController
             ],
             'keterangan' => [
                 'label' => 'Keterangan',
-                'rules' => 'required_without[barang]',
+                'rules' => 'required_without[barang]|required_without[jumlah]',
                 'errors' => [
                     'required_without' => 'Isi {field} atau pilih salah satu Barang!'
                 ]
@@ -270,8 +268,169 @@ class Jurnal extends BaseController
     {
         $data['title'] = 'Edit Transaksi';
         $query = $this->jurnalModel->builder()->select('*')->where('notrans', $notra)->get()->getResultArray();
+
+        foreach ($query as $i => $q) {
+            $idbrg = $q['fk_idbrg'];
+            // Get data Barang from DB
+            $dataBrg = $this->barangModel->builder()->select('nama, fk_idsatuan')->where('idbrg', $idbrg)->get()->getResultArray()[0];
+            $dataSat = $this->satuanModel->builder()->select('nama')->where('idsatuan', $dataBrg['fk_idsatuan'])->get()->getResultArray()[0];
+            $query[$i]['namaBar'] = $dataBrg['nama'];
+            $query[$i]['namaSat'] = $dataSat['nama'];
+        }
         $data['data'] = $query;
-        return view('jurnal/edit', $data);
+        return view('jurnal/indexedit', $data);
+    }
+
+    public function formEdit()
+    {
+        if ($this->request->isAJAX()) {
+            // One row of data jurnal
+            $id = $this->request->getPost('id');
+            // Get Data Jurnal from DB
+            $data['trans'] = $this->jurnalModel->find($id);
+            // Get Data Barang from DB
+            $dataBar = $this->barangModel->findAll();
+            foreach ($dataBar as $i => $d) {
+                $idsat = $d['fk_idsatuan'];
+                $dataSat = $this->satuanModel->builder()->select('nama')->where('idsatuan', $idsat)->get()->getResultArray()[0]['nama'];
+                $dataBar[$i]['allNamaSat'] = $dataSat;
+            }
+            $data['barang'] = $dataBar;
+            $data['satuan'] = $this->satuanModel->findAll();
+            // Data Transaksi selected one barang
+            $data['idBar'] = $data['trans']['fk_idbrg'];
+            // Get 1 data only
+            $data['oneData'] = $this->barangModel->find($data['idBar']);
+            $data['stok'] = $data['oneData']['stok'];
+            $data['namaSat'] = $this->satuanModel->builder()->select('nama')->where('idsatuan', $data['oneData']['fk_idsatuan'])->get()->getResultArray()[0]['nama'];
+            // dd($data);
+            $msg['data'] = view('jurnal/modaledit', $data);
+            echo json_encode($msg);
+        }
+    }
+
+    public function saveEdit()
+    {
+        if ($this->request->isAJAX()) {
+            // dd($_POST);
+            // Fetch POST Data
+            $idJurnalPost = $this->request->getPost('idjurnal');
+            $tglPost = $this->request->getPost('tanggal');
+            $idbrgPost = $this->request->getPost('barang');
+            $stokPost = $this->request->getPost('stok');
+            $mutPost = $this->request->getPost('mutasi');
+            $jmlPost = $this->request->getPost('jumlah');
+            $hargaPost = $this->request->getPost('harga');
+            $ketPost = $this->request->getPost('keterangan');
+
+            // Get Mutasi and Jumlah Before Update
+            $dataDB = $this->jurnalModel->builder()->select('dk, jumlah')->where('idjurnal', $idJurnalPost)->get()->getResultArray()[0];
+            $mutDB = $dataDB['dk'];
+            $jmlDB = $dataDB['jumlah'];
+
+            // Configure Stok Barang
+            // Misal mutDB = D, mutPost = K, jmlDB = 8, jmlPost = 10
+            // ex2 : mutDB = K, mutPost = K, jmlDB = 8, jmlPost = 5
+            $ruleJml = '';
+            if ($mutDB != $mutPost || $jmlDB != $jmlPost) {
+                // $stokBrg = $stokPost + $jmlPost * (($mutPost == 'D') ? 1 : -1);
+                if ($mutDB != $mutPost) {
+                    if ($mutPost == 'D') {
+                        $stokBrg = $stokPost - $jmlDB;
+                        $ruleJml .= "|less_than_equal_to[$stokBrg]";
+                        $stokNow = $stokPost - $jmlDB - $jmlPost;
+                    } else { // Mutasi = 'K'
+                        $stokBrg = 0;
+                        $stokNow = $stokPost + $jmlDB + $jmlPost;
+                    }
+                } else { // $jmlDB != $jmlPost
+                    if ($mutPost == 'D') {
+                        $stokBrg = $stokPost + $jmlDB;
+                        $ruleJml .= "|less_than_equal_to[$stokBrg]";
+                        $stokNow = $stokPost + $jmlDB - $jmlPost;
+                    } else { // Mutasi = 'K'
+                        $stokBrg = 0;
+                        $stokNow = $stokPost - $jmlDB + $jmlPost;
+                    }
+                }
+            } else {
+                $stokNow = $stokPost;
+                $stokBrg = $stokPost;
+            }
+            // dd($stokBrg, $stokNow);
+            $valid = $this->validate([
+                'tanggal' => [
+                    'label' => 'Tanggal',
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => '{field} tidak boleh kosong!'
+                    ]
+                ],
+                'barang' => [
+                    'label' => 'Barang',
+                    'rules' => 'required_without[keterangan]',
+                    'errors' => [
+                        'required_without' => 'Pilih salah satu {field} atau isi Keterangan!'
+                    ]
+                ],
+                'jumlah' => [
+                    'label' => 'Barang',
+                    'rules' => 'greater_than[0]|required_with[keterangan]' . $ruleJml,
+                    'errors' => [
+                        'greater_than' => '{field} tidak boleh berjumlah 0!',
+                        'less_than_equal_to' => 'Jumlah {field} tidak boleh melebihi stok! (Stok = ' . $stokBrg . ')'
+                    ]
+                ],
+                'keterangan' => [
+                    'label' => 'Keterangan',
+                    'rules' => 'required_without[barang]',
+                    'errors' => [
+                        'required_without' => 'Isi {field} atau pilih salah satu Barang!'
+                    ]
+                ],
+                'mutasi' => [
+                    'label' => 'Jenis Transaksi',
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => 'Pilih salah satu {field}!'
+                    ]
+                ],
+                'harga' => [
+                    'label' => 'Harga',
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => '{field} tidak boleh kosong!'
+                    ]
+                ]
+            ]);
+            if (!$valid) {
+                $msg = [
+                    'error' => [
+                        'tanggal' => $this->validation->getError('tanggal'),
+                        'barang' => $this->validation->getError('barang'),
+                        'jumlah' => $this->validation->getError('jumlah'),
+                        'keterangan' => $this->validation->getError('keterangan'),
+                        'mutasi' => $this->validation->getError('mutasi'),
+                        'harga' => $this->validation->getError('harga')
+                    ]
+                ];
+            } else {
+                $updatedData = [
+                    'tanggal' => $tglPost,
+                    'keterangan' => $ketPost,
+                    'dk' => $mutPost,
+                    'jumlah' => $jmlPost,
+                    'harga' => $hargaPost,
+                    // 'notrans' => $noTrans,
+                    'fk_idbrg' => $idbrgPost
+                ];
+                $this->jurnalModel->update($idJurnalPost, $updatedData);
+                // Update Stok Barang on DB
+                $this->barangModel->update($idbrgPost, ['stok' => $stokNow]);
+                $msg['flashData'] = 'Data transaksi berhasil diupdate!';
+            }
+            echo json_encode($msg);
+        }
     }
 
     public function delete()

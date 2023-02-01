@@ -78,8 +78,8 @@
 </div>
 <script>
     $(document).ready(function () {
-        $('#tableJurnal').click(false);
-        $('#tableJurnal').click(function () { return false; });
+        // $('#tableJurnal').click(false);
+        // $('#tableJurnal').click(function () { return false; });
         // $('#dataTable-Jurnal').DataTable({
         //     "pageLength": 25,
         //     "columnDefs": [

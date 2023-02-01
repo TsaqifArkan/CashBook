@@ -43,7 +43,7 @@
                             <div class="col-3">
                                 <div class="form-group mb-3">
                                     <label for="barang" class="form-label">Pilih Barang</label>
-                                    <select class="form-select" id="barang" name="barang">
+                                    <select class="form-select barang-select2" id="barang" name="barang">
                                     <!-- onchange="setSatStok()" -->
                                         <option value="" disabled selected>-- Pilih barang --</option>
                                         <?php foreach ($barang as $i => $b): ?>
@@ -60,7 +60,7 @@
                             <div class="col-1">
                                 <div class="form-group mb-3">
                                     <label for="stok" class="form-label">Stok</label>
-                                    <input type="number" class="form-control" name="stok" id="stok" disabled>
+                                    <input type="text" class="form-control" name="stok" id="stok" disabled>
                                 </div>
                             </div>
                             <div class="col-3">
@@ -90,7 +90,8 @@
                             <div class="col-1">
                                 <div class="form-group mb-3">
                                     <label for="jumlah" class="form-label">Jumlah</label>
-                                    <input type="number" class="form-control" name="jumlah" id="jumlah" disabled>
+                                    <input type="text" class="form-control" name="jumlah" id="jumlah"  disabled>
+                                    <div class="text-secondary text-sm">(untuk pecahan, gunakan titik ex: 1.5)</div>
                                     <div class="invalid-feedback errorJumlah"></div>
                                 </div>
                             </div>
@@ -171,7 +172,14 @@
     </div>
 
 </div>
+<div class="viewModalEditTransaksi" style="display: none;"></div>
 <script>
+    // Select2 Dropdown Feature (newer ver)
+    // $(document).ready(function () {
+    //     $('.barang-select2').select2();
+    // });
+
+
     // DSelect (searchable dropdown) feature
     const config = {
         search: true, // Toggle search feature. Default: false
@@ -291,7 +299,10 @@
                             <td>${f['satuan'].value}</td>
                             <td>${$('input[name="mutasi"]:checked').data('mut')}</td>
                             <td>${f['harga'].value}</td>
-                            <td><button class="btn btn-danger hapus" onclick="hapus(${c})"><i class="fa-solid fa-fw fa-trash"></i></i></button></td></tr>`;
+                            <td>
+                            <button class="btn btn-warning btn-sm" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Edit" onclick="ubah(${c})"><i class="fa-solid fa-fw fa-pen-to-square"></i></button>
+                            <button class="btn btn-danger btn-sm hapus" onclick="hapus(${c})"><i class="fa-solid fa-fw fa-trash"></i></i></button>
+                            </td></tr>`;
                             t.innerHTML += ftext;
 
                             // Preparing data to be sent
@@ -306,6 +317,7 @@
                                 // stok: stokBrg
                             };
                             list_transaksi[c++] = data;
+                            // console.log(data, list_transaksi);
 
                             // Count Stok Saat ini
                             let mutasi = $('input[name="mutasi"]:checked').val();
@@ -314,12 +326,12 @@
                             if (mutasi == 'D') {
                                 // stokBrg -= jumlah;
                                 // $('#barang').find(":selected")[0].dataset.stok = stokBrg;
-                                $('#barang')[0].selectedOptions[0].dataset['stok'] = parseInt($('#barang')[0].selectedOptions[0].dataset['stok']) - parseInt($('#jumlah').val());
+                                $('#barang')[0].selectedOptions[0].dataset['stok'] = parseFloat($('#barang')[0].selectedOptions[0].dataset['stok']) - parseFloat($('#jumlah').val());
                                 // console.log('debit');
                                 // console.log(typeof($('#barang')[0].selectedOptions[0].dataset['stok']));
                             } else {
                                 // stokBrg += jumlah;
-                                ($('#barang')[0].selectedOptions[0].dataset['stok']) = parseInt($('#barang')[0].selectedOptions[0].dataset['stok']) + parseInt($('#jumlah').val());
+                                ($('#barang')[0].selectedOptions[0].dataset['stok']) = parseFloat($('#barang')[0].selectedOptions[0].dataset['stok']) + parseFloat($('#jumlah').val());
                                 // console.log('kredit');
                                 // console.log(typeof($('#barang')[0].selectedOptions[0].dataset['stok']));
                             }
@@ -330,10 +342,15 @@
 
                             // Clearing inputted data
                             $('#keterangan')[0].value = '';
+
                             // $('#barang')[0].value = '';
+                            // $('#select2-barang-container')[0].innerHTML = '';
                             // $('#stok')[0].value = '';
+                            
                             $('#harga')[0].value = '';
+                            
                             // $('#satuan')[0].value = '';
+                            
                             $('#jumlah')[0].value = '';
 
                             Swal.fire({
@@ -419,12 +436,12 @@
         }
     }
 
-    // Function to automatically set satuan and stok barang
-    function setSatStok() {
-        let brg = $('#barang')[0].selectedOptions[0];
-        $('#satuan')[0].value = brg.dataset['satuan'];
-        $('#stok')[0].value = brg.dataset['stok'];
-    }
+    // // Function to automatically set satuan and stok barang
+    // function setSatStok() {
+    //     let brg = $('#barang')[0].selectedOptions[0];
+    //     $('#satuan')[0].value = brg.dataset['satuan'];
+    //     $('#stok')[0].value = brg.dataset['stok'];
+    // }
 
     $('#barang').change(function(){
         $('#satuan')[0].value = this.selectedOptions[0].dataset['satuan'];
@@ -439,6 +456,34 @@
         }
     }
 
+    // Konfigurasi Tombol Edit
+    function ubah(id) {
+        // $('#tanggal')[0].value = list_transaksi[id]['tanggal'];
+        const data = list_transaksi[id];
+
+        $.ajax({
+            type: "POST",
+            url: "<?= base_url('jurnal/formedit'); ?>",
+            data: {
+                trans: data
+            },
+            dataType: "JSON",
+            success: function (response) {
+                if (response.data) {
+                    $('.viewModalSatuan').html(response.data).show();
+                    $('#modalEditSatuan').modal('show');
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                // alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
+                var tab = window.open('about:blank', '_blank');
+                tab.document.write(xhr.responseText); // where 'html' is a variable containing your HTML
+                tab.document.close(); // to finish loading the page
+            }
+        });
+    }
+
+
     function hapus(id) {
         a = document.getElementById('list' + id);
         // console.log(a);
@@ -451,9 +496,9 @@
             c++;
         }
         if (mutasi == 'D'){
-            $("#barang option#brg"+c)[0].dataset['stok'] = parseInt($("#barang option#brg"+c)[0].dataset['stok']) + parseInt(jumlah);
+            $("#barang option#brg"+c)[0].dataset['stok'] = parseFloat($("#barang option#brg"+c)[0].dataset['stok']) + parseFloat(jumlah);
         } else {
-            $("#barang option#brg"+c)[0].dataset['stok'] = parseInt($("#barang option#brg"+c)[0].dataset['stok']) - parseInt(jumlah);
+            $("#barang option#brg"+c)[0].dataset['stok'] = parseFloat($("#barang option#brg"+c)[0].dataset['stok']) - parseFloat(jumlah);
         }
         if ($('#barang')[0].selectedOptions[0].value == $("#barang option#brg"+c)[0].value){
             $('#stok')[0].value = $("#barang option#brg"+c)[0].dataset['stok'];
@@ -474,12 +519,12 @@
         // if (mutasi == 'D') {
         //     // stokBrg -= jumlah;
         //     // $('#barang').find(":selected")[0].dataset.stok = stokBrg;
-        //     $('#barang')[0].selectedOptions[0].dataset['stok'] = parseInt($('#barang')[0].selectedOptions[0].dataset['stok']) - parseInt($('#jumlah').val());
+        //     $('#barang')[0].selectedOptions[0].dataset['stok'] = parseFloat($('#barang')[0].selectedOptions[0].dataset['stok']) - parseFloat($('#jumlah').val());
         //     // console.log('debit');
         //     // console.log(typeof($('#barang')[0].selectedOptions[0].dataset['stok']));
         // } else {
         //     // stokBrg += jumlah;
-        //     ($('#barang')[0].selectedOptions[0].dataset['stok']) = parseInt($('#barang')[0].selectedOptions[0].dataset['stok']) + parseInt($('#jumlah').val());
+        //     ($('#barang')[0].selectedOptions[0].dataset['stok']) = parseFloat($('#barang')[0].selectedOptions[0].dataset['stok']) + parseFloat($('#jumlah').val());
         //     // console.log('kredit');
         //     // console.log(typeof($('#barang')[0].selectedOptions[0].dataset['stok']));
         // }

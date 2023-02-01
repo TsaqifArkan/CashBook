@@ -175,6 +175,7 @@ class Barang extends BaseController
     public function detail($id = 0)
     {
         $data['title'] = 'Detail Barang';
+        $data['namaBarang'] = $this->barangModel->builder()->select('nama')->where('idbrg', $id)->get()->getResultArray()[0]['nama'];
         $detail = $this->jurnalModel->builder()->select('*')->where('fk_idbrg', $id)->get()->getResultArray();
         $saldo = 0;
         foreach ($detail as $i => $d) {

@@ -29,7 +29,7 @@
                     <div class="table-responsive">
                         <div class="row mb-2 mx-0">
                             <div class="col mx-0">
-                                <h4 class="text-dark"><strong><?= $data[0]['namaBrg']; ?></strong></h4>
+                                <h4 class="text-dark"><strong><?= $namaBarang; ?></strong></h4>
                             </div>
                         </div>
                         <table class="table table-bordered table-hover" id="dataTable-Detail">

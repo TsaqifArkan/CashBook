@@ -19,7 +19,7 @@ class AuthFilter implements FilterInterface
                     'id' => session('admin_session.id'),
                     'uname' => session('admin_session.uname'),
                     'sesskey' => session('admin_session.sesskey')
-                ], 1800);
+                ], 3600);
                 session()->set('ann', date('Y'));
                 return;
             }

@@ -58,7 +58,7 @@ class Auth extends BaseController
                     'id' => $result['idadmin'],
                     'uname' => $result['username'],
                     'sesskey' => $key
-                ], 1800);
+                ], 3600);
                 session()->set('ann', date('Y'));
                 return redirect()->to(base_url('/'));
             }

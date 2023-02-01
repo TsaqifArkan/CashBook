@@ -72,7 +72,7 @@ class Admin extends BaseController
                 ];
                 $this->adminModel->update($id, $updatedData);
                 // Update Session
-                session()->setTempdata('admin_session.uname', $unamePost, 1800);
+                session()->setTempdata('admin_session.uname', $unamePost, 3600);
                 $msg['flashData'] = 'Data admin berhasil diupdate.';
             }
             echo json_encode($msg);
