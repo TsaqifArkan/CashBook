@@ -39,13 +39,14 @@ class JurnalModel extends Model
         return $search->get()->getResultArray();
     }
 
-    public function getJurnal($tglawal, $tglakhir)
+    public function getJurnal($bulan)
     {
         // $currencyfmt = numfmt_create('ID_id', NumberFormatter::CURRENCY);
         $db = \Config\Database::connect();
 
-        $q = $db->query("CALL get_jurnal(DATE('$tglawal'), DATE('$tglakhir'))");
+        $q = $db->query("CALL get_jurnal(DATE('$bulan'))");
         $res = $q->getResultArray();
+        // dd($res);
         // foreach ($res as $i => $d) {
         //     $deb = $res[$i]['debit'];
         //     $kre = $res[$i]['kredit'];

@@ -48,6 +48,13 @@ function url($needle)
                     </a>
                 </li> -->
 
+                <li class="sidebar-item <?= url('bukukas'); ?>">
+                    <a href="<?= base_url('bukukas'); ?>" class='sidebar-link'>
+                        <i class="fa-brands fa-fw fa-sellcast"></i>
+                        <span>Buku Kas</span>
+                    </a>
+                </li>
+
                 <li class="sidebar-item <?= url('barang'); ?>">
                     <a href="<?= base_url('barang'); ?>" class='sidebar-link'>
                         <i class="fa-solid fa-fw fa-weight-hanging"></i>

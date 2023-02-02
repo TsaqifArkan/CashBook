@@ -138,14 +138,14 @@
                             $('#jumlah').addClass('is-valid');
                             $('.errorJumlah').html('');
                         }
-                        if (response.error.keterangan) {
-                            $('#keterangan').addClass('is-invalid');
-                            $('.errorKeterangan').html(response.error.keterangan);
-                        } else {
-                            $('#keterangan').removeClass('is-invalid');
-                            $('#keterangan').addClass('is-valid');
-                            $('.errorKeterangan').html('');
-                        }
+                        // if (response.error.keterangan) {
+                        //     $('#keterangan').addClass('is-invalid');
+                        //     $('.errorKeterangan').html(response.error.keterangan);
+                        // } else {
+                        //     $('#keterangan').removeClass('is-invalid');
+                        //     $('#keterangan').addClass('is-valid');
+                        //     $('.errorKeterangan').html('');
+                        // }
                         if (response.error.mutasi) {
                             $('.errorMutasi').html(response.error.mutasi);
                         } else {

@@ -16,9 +16,10 @@
                     <div class="invalid-feedback errorNama"></div>
                 </div>
                 <div class="form-group mb-3">
-                    <label for="stok" class="form-label">Stok</label>
-                    <input type="text" class="form-control" name="stok" id="stok" value="<?= esc($barang['stok']); ?>">
-                    <div class="invalid-feedback errorStok"></div>
+                    <label for="stokAwal" class="form-label">Stok Awal</label>
+                    <input type="text" class="form-control" name="stokAwal" id="stokAwal"
+                        value="<?= esc($barang['stokawal']); ?>" placeholder="ex: 0 / 1.5 / 10 ...">
+                    <div class="invalid-feedback errorStokAwal"></div>
                 </div>
                 <div class="form-group mb-3">
                     <label for="satuan" class="form-label">Satuan</label>
@@ -70,13 +71,13 @@
                             $('#nama').addClass('is-valid');
                             $('.errorNama').html('');
                         }
-                        if (response.error.stok) {
-                            $('#stok').addClass('is-invalid');
-                            $('.errorStok').html(response.error.stok);
+                        if (response.error.stokAwal) {
+                            $('#stokAwal').addClass('is-invalid');
+                            $('.errorStokAwal').html(response.error.stokAwal);
                         } else {
-                            $('#stok').removeClass('is-invalid');
-                            $('#stok').addClass('is-valid');
-                            $('.errorStok').html('');
+                            $('#stokAwal').removeClass('is-invalid');
+                            $('#stokAwal').addClass('is-valid');
+                            $('.errorStokAwal').html('');
                         }
                         if (response.error.satuan) {
                             $('#satuan').addClass('is-invalid');

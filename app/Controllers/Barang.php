@@ -62,12 +62,12 @@ class Barang extends BaseController
                         'required' => '{field} tidak boleh kosong!'
                     ]
                 ],
-                'stok' => [
-                    'label' => 'Stok Barang',
-                    'rules' => 'required|is_natural_no_zero',
+                'stokAwal' => [
+                    'label' => 'Stok Awal Barang',
+                    'rules' => 'required|decimal',
                     'errors' => [
                         'required' => 'Jumlah {field} tidak boleh kosong!',
-                        'is_natural_no_zero' => '{field} minimal berjumlah 1!'
+                        'decimal' => '{field} minimal berjumlah 0!'
                     ]
                 ],
                 'satuan' => [
@@ -82,7 +82,7 @@ class Barang extends BaseController
                 $msg = [
                     'error' => [
                         'nama' => $this->validation->getError('nama'),
-                        'stok' => $this->validation->getError('stok'),
+                        'stokAwal' => $this->validation->getError('stokAwal'),
                         'satuan' => $this->validation->getError('satuan')
                     ]
                 ];
@@ -90,7 +90,8 @@ class Barang extends BaseController
                 // Insert ke DB
                 $inputData = [
                     'nama' => $this->request->getPost('nama'),
-                    'stok' => $this->request->getPost('stok'),
+                    'stokawal' => $this->request->getPost('stokAwal'),
+                    'stok' => $this->request->getPost('stokAwal'),
                     'fk_idsatuan' => $this->request->getPost('satuan')
                 ];
                 $this->barangModel->insert($inputData);
@@ -124,12 +125,12 @@ class Barang extends BaseController
                         'required' => '{field} tidak boleh kosong!'
                     ]
                 ],
-                'stok' => [
-                    'label' => 'Stok Barang',
-                    'rules' => 'required|is_natural_no_zero',
+                'stokAwal' => [
+                    'label' => 'Stok Awal Barang',
+                    'rules' => 'required|decimal',
                     'errors' => [
                         'required' => 'Jumlah {field} tidak boleh kosong!',
-                        'is_natural_no_zero' => '{field} minimal berjumlah 1!'
+                        'decimal' => '{field} minimal berjumlah 0!'
                     ]
                 ],
                 'satuan' => [
@@ -144,14 +145,14 @@ class Barang extends BaseController
                 $msg = [
                     'error' => [
                         'nama' => $this->validation->getError('nama'),
-                        'stok' => $this->validation->getError('stok'),
+                        'stokAwal' => $this->validation->getError('stokAwal'),
                         'satuan' => $this->validation->getError('satuan')
                     ]
                 ];
             } else {
                 $updatedData = [
                     'nama' => $this->request->getPost('nama'),
-                    'stok' => $this->request->getPost('stok'),
+                    'stokawal' => $this->request->getPost('stokAwal'),
                     'fk_idsatuan' => $this->request->getPost('satuan')
                 ];
                 $this->barangModel->update($id, $updatedData);
@@ -175,7 +176,9 @@ class Barang extends BaseController
     public function detail($id = 0)
     {
         $data['title'] = 'Detail Barang';
-        $data['namaBarang'] = $this->barangModel->builder()->select('nama')->where('idbrg', $id)->get()->getResultArray()[0]['nama'];
+        $dataBarang = $this->barangModel->builder()->select('nama, stokawal')->where('idbrg', $id)->get()->getResultArray()[0];
+        $data['namaBarang'] = $dataBarang['nama'];
+        $data['stokawalBrg'] = $dataBarang['stokawal'];
         $detail = $this->jurnalModel->builder()->select('*')->where('fk_idbrg', $id)->get()->getResultArray();
         $saldo = 0;
         foreach ($detail as $i => $d) {
@@ -183,12 +186,15 @@ class Barang extends BaseController
             $query = $this->barangModel->builder()->select('*')->where('idbrg', $idBrg)->get()->getResultArray()[0];
             $idSat = $query['fk_idsatuan'];
             $query2 = $this->satuanModel->builder()->select('*')->where('idsatuan', $idSat)->get()->getResultArray()[0];
+            // Count StokNow
+            $stok = $data['stokawalBrg'] + ($d['jumlah'] * ($d['dk'] == 'D' ? -1 : 1));
             // Count Saldo
             $total = $d['jumlah'] * $d['harga'];
             $pemasukan = ($d['dk'] == 'D') ? $total : '';
             $pengeluaran = ($d['dk'] == 'K') ? $total : '';
             $saldo += $total * ($d['dk'] == 'D' ? 1 : -1);
             // Forming Array
+            $detail[$i]['stokNow'] = $stok;
             $detail[$i]['namaBrg'] = $query['nama'];
             $detail[$i]['satBrg'] = $query2['nama'];
             $detail[$i]['pemasukan'] = $pemasukan;

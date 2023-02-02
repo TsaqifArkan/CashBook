@@ -4,9 +4,9 @@
             <tr>
                 <th class="text-uppercase fw-bold head-no">No</th>
                 <th class="text-uppercase fw-bold">Nama Barang</th>
-                <th class="text-uppercase fw-bold">Stok</th>
+                <th class="text-uppercase fw-bold">Stok Sekarang</th>
                 <th class="text-uppercase fw-bold">Satuan</th>
-                <th class="text-uppercase fw-bold head-aksi-klas">Aksi</th>
+                <th class="text-uppercase fw-bold head-aksi">Aksi</th>
             </tr>
         </thead>
         <tbody>

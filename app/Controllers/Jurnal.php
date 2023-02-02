@@ -3,13 +3,14 @@
 namespace App\Controllers;
 
 use App\Models\BarangModel;
+use App\Models\BukukasModel;
 use App\Models\JurnalModel;
 use App\Models\SatuanModel;
 
 
 class Jurnal extends BaseController
 {
-    protected $jurnalModel, $db, $builder, $barangModel, $satuanModel;
+    protected $jurnalModel, $db, $builder, $barangModel, $satuanModel, $bukukasModel;
 
     public function __construct()
     {
@@ -18,20 +19,68 @@ class Jurnal extends BaseController
         $this->builder = $this->db->table('jurnal');
         $this->barangModel = new BarangModel();
         $this->satuanModel = new SatuanModel();
+        $this->bukukasModel = new BukukasModel();
     }
 
     public function index()
     {
         $data['title'] = 'Jurnal';
 
-        $thisyear = $this->yearnow == date('Y');
-        $data['datemin'] = $this->yearnow . '-01-01';
-        $data['datemax'] = $thisyear ? date('Y-m-d') : $this->yearnow . '-12-31';
-        $data['now'] = $thisyear ? date('Y-m-d') : $data['datemax'];
+        $data['now'] = date('Y-m');
+        // $coba = $this->db->query('SELECT * FROM bukukas')->getResultArray();
+        // $dataBK = $this->bukukasModel->builder()->
+        // dd($coba);
+        // if (isset($coba)) {
+        // $data['initSaldo'] = 0;
+        // } else {
+
+        // }
+        // $stillNew = isset($coba);
+        // $data['initSaldo'] = 0;
+        // $thisyear = $this->yearnow == date('Y');
+        // $data['datemin'] = $this->yearnow . '-01';
+        // $data['datemax'] = $thisyear ? date('Y-m') : $this->yearnow . '-12';
+        // $data['now'] = $thisyear ? date('Y-m') : $data['datemax'];
+
+        // $data['datemin'] = $this->yearnow . '-01-01';
+        // $data['datemax'] = $thisyear ? date('Y-m-d') : $this->yearnow . '-12-31';
+        // $data['now'] = $thisyear ? date('Y-m-d') : $data['datemax'];
         // $data['data'] = $thisyear ? $this->jurnalModel->getJurnal(date('Y-m-d'), date('Y-m-d')) : $this->jurnalModel->getJurnal($data['datemax'], $data['datemax']);
         // $data['dateawal'] = date_format(date_create("2000-01-01"), 'Y-m-d');
 
         return view('jurnal/index', $data);
+    }
+
+    public function initSaldo()
+    {
+        if ($this->request->isAJAX()) {
+            $initSaldo = $this->request->getPost('initSaldo');
+            $valid = $this->validate([
+                'initSaldo' => [
+                    'label' => 'Saldo Awal',
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => '{field} tidak boleh kosong!'
+                    ]
+                ]
+            ]);
+            if (!$valid) {
+                $msg = [
+                    'error' => [
+                        'initSaldo' => $this->validation->getError('initSaldo')
+                    ]
+                ];
+            } else {
+                $inputData = [
+                    'nama' => $this->request->getPost('nama'),
+                    'stokawal' => $this->request->getPost('stokAwal'),
+                    'fk_idsatuan' => $this->request->getPost('satuan')
+                ];
+                $this->barangModel->insert($inputData);
+                $msg['flashData'] = 'Saldo awal berhasil disimpan.';
+            }
+            echo json_encode($msg);
+        }
     }
 
     public function getData()
@@ -49,9 +98,25 @@ class Jurnal extends BaseController
             // UNTIL THIS LINE
 
             // Try to implement DateRange
-            $awal = $this->request->getPost('awal');
-            $akhir = $this->request->getPost('akhir');
-            $data['data'] = $this->jurnalModel->getJurnal($awal, $akhir);
+            $bulan = $this->request->getPost('bulan');
+            $bulan = $bulan . '-' . date('d');
+            // $bulan = '2023-01-01';
+            // dd($bulan);
+            // $bulan = "2023-01-01";
+            // dd($bulan);
+            // $awal = $this->request->getPost('awal');
+            // $akhir = $this->request->getPost('akhir');
+
+            // Update the table on 02/02/2023
+            // Changelog : add total on Jurnal table
+            // $data['data'] = $this->jurnalModel->getJurnal($bulan);
+            $dataJurnal = $this->jurnalModel->getJurnal($bulan);
+            $total = 0;
+            foreach ($dataJurnal as $i => $d) {
+                $total = $d['jumlah'] * $d['harga'];
+                $dataJurnal[$i]['total'] = $total;
+            }
+            $data['data'] = $dataJurnal;
             // dd($data['data']);
 
             // Configure Rowspan 
@@ -59,6 +124,7 @@ class Jurnal extends BaseController
             // dd($data['cRow']);
             // Configure Rowspan by NoTrans
             $data['nRow'] = $this->jurnalModel->builder()->selectCount('notrans', 'noRow')->groupBy('notrans')->get()->getResultArray();
+            // dd($data);
             $msg['data'] = view('jurnal/tablejurnal', $data);
             echo json_encode($msg);
         }
@@ -86,7 +152,21 @@ class Jurnal extends BaseController
 
     public function transaksi()
     {
-        $data['title'] = 'Tambah Transaksi';
+        $data['title'] = 'Transaksi Jual/Beli';
+        // $data['validation'] = $this->validation;
+        // Get data Barang from DB
+        $dataBrg = $this->barangModel->builder()->select('idbrg, nama, stok, fk_idsatuan')->get()->getResultArray();
+        foreach ($dataBrg as $i => $b) {
+            $dataSat = $this->satuanModel->builder()->select('nama')->where('idsatuan', $b['fk_idsatuan'])->get()->getResultArray()[0];
+            $dataBrg[$i]['namaSat'] = $dataSat['nama'];
+        }
+        $data['barang'] = $dataBrg;
+        return view('jurnal/transaksi', $data);
+    }
+
+    public function other()
+    {
+        $data['title'] = 'Transaksi Lainnya';
         // $data['validation'] = $this->validation;
         // Get data Barang from DB
         $dataBrg = $this->barangModel->builder()->select('idbrg, nama, stok, fk_idsatuan')->get()->getResultArray();
@@ -157,27 +237,29 @@ class Jurnal extends BaseController
             ],
             'barang' => [
                 'label' => 'Barang',
-                'rules' => 'required_without[keterangan]',
+                // 'rules' => 'required_without[keterangan]',
+                'rules' => 'required',
                 'errors' => [
-                    'required_without' => 'Pilih salah satu {field} atau isi Keterangan!'
+                    // 'required_without' => 'Pilih salah satu {field} atau isi Keterangan!'
+                    'required' => 'Pilih salah satu {field}!'
                 ]
             ],
             'jumlah' => [
                 'label' => 'Barang',
-                'rules' => 'required_without[mutasi]|greater_than[0]|required_with[keterangan]' . $ruleJml,
+                'rules' => 'required_without[mutasi]|greater_than[0]' . $ruleJml,
                 'errors' => [
                     'required_without' => 'Pilih salah satu Jenis Transaksi terlebih dahulu!',
                     'greater_than' => '{field} tidak boleh berjumlah 0!',
                     'less_than_equal_to' => 'Jumlah {field} tidak boleh melebihi stok! (Stok = ' . $stokBrg . ')'
                 ]
             ],
-            'keterangan' => [
-                'label' => 'Keterangan',
-                'rules' => 'required_without[barang]|required_without[jumlah]',
-                'errors' => [
-                    'required_without' => 'Isi {field} atau pilih salah satu Barang!'
-                ]
-            ],
+            // 'keterangan' => [
+            //     'label' => 'Keterangan',
+            //     'rules' => 'required_without[barang]|required_without[jumlah]',
+            //     'errors' => [
+            //         'required_without' => 'Isi {field} atau pilih salah satu Barang!'
+            //     ]
+            // ],
             'mutasi' => [
                 'label' => 'Jenis Transaksi',
                 'rules' => 'required',
@@ -199,7 +281,7 @@ class Jurnal extends BaseController
                     'tanggal' => $this->validation->getError('tanggal'),
                     'barang' => $this->validation->getError('barang'),
                     'jumlah' => $this->validation->getError('jumlah'),
-                    'keterangan' => $this->validation->getError('keterangan'),
+                    // 'keterangan' => $this->validation->getError('keterangan'),
                     'mutasi' => $this->validation->getError('mutasi'),
                     'harga' => $this->validation->getError('harga')
                 ]
@@ -368,9 +450,11 @@ class Jurnal extends BaseController
                 ],
                 'barang' => [
                     'label' => 'Barang',
-                    'rules' => 'required_without[keterangan]',
+                    // 'rules' => 'required_without[keterangan]',
+                    'rules' => 'required',
                     'errors' => [
-                        'required_without' => 'Pilih salah satu {field} atau isi Keterangan!'
+                        // 'required_without' => 'Pilih salah satu {field} atau isi Keterangan!'
+                        'required_without' => 'Pilih salah satu {field}!'
                     ]
                 ],
                 'jumlah' => [
@@ -381,13 +465,13 @@ class Jurnal extends BaseController
                         'less_than_equal_to' => 'Jumlah {field} tidak boleh melebihi stok! (Stok = ' . $stokBrg . ')'
                     ]
                 ],
-                'keterangan' => [
-                    'label' => 'Keterangan',
-                    'rules' => 'required_without[barang]',
-                    'errors' => [
-                        'required_without' => 'Isi {field} atau pilih salah satu Barang!'
-                    ]
-                ],
+                // 'keterangan' => [
+                //     'label' => 'Keterangan',
+                //     'rules' => 'required_without[barang]',
+                //     'errors' => [
+                //         'required_without' => 'Isi {field} atau pilih salah satu Barang!'
+                //     ]
+                // ],
                 'mutasi' => [
                     'label' => 'Jenis Transaksi',
                     'rules' => 'required',
@@ -409,7 +493,7 @@ class Jurnal extends BaseController
                         'tanggal' => $this->validation->getError('tanggal'),
                         'barang' => $this->validation->getError('barang'),
                         'jumlah' => $this->validation->getError('jumlah'),
-                        'keterangan' => $this->validation->getError('keterangan'),
+                        // 'keterangan' => $this->validation->getError('keterangan'),
                         'mutasi' => $this->validation->getError('mutasi'),
                         'harga' => $this->validation->getError('harga')
                     ]
@@ -434,6 +518,26 @@ class Jurnal extends BaseController
     }
 
     public function delete()
+    {
+        if ($this->request->isAJAX()) {
+            $idjur = $this->request->getPost('id');
+            // Update stok barang terlebih dahulu
+            $dataDB = $this->jurnalModel->builder()->select('dk, jumlah, fk_idbrg')->where('idjurnal', $idjur)->get()->getResultArray()[0];
+            $mutJur = $dataDB['dk'];
+            $jmlJur = $dataDB['jumlah'];
+            $idBrg = $dataDB['fk_idbrg'];
+            $stokBrg = $this->barangModel->builder()->select('stok')->where('idbrg', $idBrg)->get()->getResultArray()[0]['stok'];
+            $stokNow = $stokBrg + ($jmlJur * ($mutJur == 'D' ? 1 : -1));
+            // Update data stok Barang di DB
+            $this->barangModel->update($idBrg, ['stok' => $stokNow]);
+            // Delete 1 row data
+            $this->jurnalModel->delete($idjur);
+            $msg['flashData'] = 'Data transaksi berhasil dihapus.';
+            echo json_encode($msg);
+        }
+    }
+
+    public function deleteAll()
     {
         if ($this->request->isAJAX()) {
             $notra = $this->request->getPost('notra');

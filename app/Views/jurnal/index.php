@@ -9,7 +9,7 @@
     </nav>
 </div>
 
-<div class="container-fluid">
+<div class="container-fluid ">
 
     <!-- FLASH DATA -->
     <div class="flash-data" data-flashdata="<?= session()->getFlashdata('msg'); ?>"></div>
@@ -22,10 +22,16 @@
     </div>
 
     <div class="row mb-3">
-        <div class="col">
+        <div class="col-6 text-center">
             <a href="<?= base_url('jurnal/transaksi'); ?>" class="btn btn-success">
                 <span class="me-1"><i class="fa-solid fa-fw fa-circle-plus"></i></span>
-                <span>Tambah Transaksi</span>
+                <span>Jual/Beli Barang</span>
+            </a>
+        </div>
+        <div class="col-6 text-center">
+            <a href="<?= base_url('jurnal/other'); ?>" class="btn btn-success">
+                <span class="me-1"><i class="fa-solid fa-fw fa-circle-plus"></i></span>
+                <span>Transaksi Lainnya</span>
             </a>
         </div>
     </div>
@@ -39,17 +45,17 @@
                             <h6 class="m-1 fw-bold text-uppercase">Tabel Jurnal</h6>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col">
-                            <label for="awal">Tanggal Awal</label>
-                            <input type="date" class="form-control mb-3 tanggal" id="awal" min='<?= $datemin ?>'
-                                max='<?= $datemax ?>' value="<?= $datemin ?>" onchange="awalOnChange(event);">
+                    <div class="row justify-content-center">
+                        <div class="col-4">
+                            <label for="bulan">Periode Bulan</label>
+                            <input type="month" class="form-control mb-3 tanggal" id="bulan" value="<?= $now ?>"
+                                onchange="bulan(event);">
                         </div>
-                        <div class="col">
+                        <!-- <div class="col">
                             <label for="awal">Tanggal Akhir</label>
-                            <input type="date" class="form-control mb-3 tanggal" id="akhir" min='<?= $datemin ?>'
-                                max='<?= $datemax ?>' value="<?= $now ?>" onchange="akhirOnChange(event);">
-                        </div>
+                            <input type="date" class="form-control mb-3 tanggal" id="akhir" min='<?php // echo $datemin ?>'
+                                max='<?php // echo $datemax ?>' value="<?php // echo $now ?>" onchange="akhirOnChange(event);">
+                        </div> -->
                     </div>
                 </div>
                 <div class="card-body">
@@ -62,12 +68,11 @@
     </div>
 </div>
 <script>
-    function tableJurnal(awal, akhir) {
+    function tableJurnal(bulan) {
         $.ajax({
             url: "<?= base_url('jurnal/getData'); ?>",
-            data:{
-                awal: awal,
-                akhir: akhir
+            data: {
+                bulan: bulan
             },
             method: "POST",
             dataType: "JSON",
@@ -83,37 +88,39 @@
         });
     }
 
+    function bulan(e) {
+        // let awal = e.target.value;
+        // console.log(awal);
+        var bulan = e.target.value;
+        // var tglakhir = $('#akhir').val();
+        tableJurnal(bulan);
+    }
+
     $(document).ready(function () {
-        var tglawal = $('#awal').val();
-        var tglakhir = $('#akhir').val();
+        // Get data from Bulan
+        var bulan = $('#bulan').val();
+        // var tglakhir = $('#akhir').val();
         // console.log(tglawal, tglakhir);
-        tableJurnal(tglawal, tglakhir);
+        tableJurnal(bulan);
 
         // >> Konfigurasi flash data
         const flashData = $('.flash-data').data('flashdata');
         // console.log(flashData);
-        if(flashData){
+        if (flashData) {
             Swal.fire({
-                title : 'SUCCESS !',
-                text : flashData,
-                icon : 'success'
+                title: 'SUCCESS !',
+                text: flashData,
+                icon: 'success'
             });
         }
+
     });
 
-    function awalOnChange(e){
-        // let awal = e.target.value;
-        // console.log(awal);
-        var tglawal = e.target.value;
-        var tglakhir = $('#akhir').val();
-        tableJurnal(tglawal, tglakhir);
-    }
-
-    function akhirOnChange(e) {
-        var tglawal = $('#awal').val();
-        var tglakhir = e.target.value;
-        tableJurnal(tglawal, tglakhir);
-    }
+    // function akhirOnChange(e) {
+    //     var tglawal = $('#awal').val();
+    //     var tglakhir = e.target.value;
+    //     tableJurnal(tglawal, tglakhir);
+    // }
 </script>
 
 <?= $this->endSection(); ?>

@@ -1,4 +1,4 @@
-<?php // echo dd($data, $nRow); ?>
+<?php //echo dd($data, $nRow); ?>
 
 <!-- Konfigurasi input search -->
 <!-- <div class="container">
@@ -26,6 +26,7 @@
                 <th class="text-uppercase fw-bold">Satuan</th>
                 <th class="text-uppercase fw-bold">Jenis Transaksi</th>
                 <th class="text-uppercase fw-bold">Harga</th>
+                <th class="text-uppercase fw-bold">Total</th>
                 <th class="text-uppercase fw-bold head-aksi-klas">Aksi</th>
             </tr>
         </thead>
@@ -37,6 +38,7 @@
             $i = 0;
             $c = "";
             $row = ""; ?>
+            <?php $j = 1; ?>
             <?php foreach ($data as $d): ?>
                 <?php // $datenow = $d['created_at']; ?>
                 <?php $notranow = $d['notrans']; ?>
@@ -46,7 +48,7 @@
                     <?php $c = $i; ?>
                     <?php // $dateprev = $datenow; ?>
                     <?php $notraprev = $notranow; ?>
-                    <?php $row = $nRow[$c - 1]['noRow']; ?>
+                    <?php $row = $nRow[$c + 8]['noRow']; ?>
                     <?php $firstRC = "<td rowspan='$row'>$c</td>"; ?>
                     <?php $lastRC = "<td rowspan=" . $row . ">
                     <a href=" . base_url('jurnal/edit') . '/' . esc($notranow) . " class='btn btn-warning btn-sm' data-bs-toggle='tooltip' data-bs-placement='bottom' title='Edit'><i
@@ -62,7 +64,8 @@
                     <?php $lastRC = ""; ?>
                 <?php endif; ?>
                 <tr>
-                    <?= $firstRC; ?>
+                    <?php echo $firstRC; ?>
+                    <!-- <td><?php // echo $j++; ?></td> -->
                     <td><?= esc($d['tanggal']); ?></td>
                     <td><?= esc($d['keterangan']); ?></td>
                     <td><?= esc($d['namabarang']); ?></td>
@@ -70,7 +73,9 @@
                     <td><?= esc($d['namasatuan']); ?></td>
                     <td><?=(esc($d['dk']) == 'D' ? 'Pemasukan' : 'Pengeluaran'); ?></td>
                     <td><?= esc($d['harga']); ?></td>
-                    <?= $lastRC; ?>
+                    <td><?= esc($d['total']); ?></td>
+                    <!-- <td></td> -->
+                    <?php echo $lastRC; ?>
                 </tr>
             <?php endforeach; ?>
         </tbody>
@@ -135,7 +140,7 @@
             if (result.isConfirmed) {
                 $.ajax({
                     type: "POST",
-                    url: "<?= base_url('jurnal/delete'); ?>",
+                    url: "<?= base_url('jurnal/deleteall'); ?>",
                     data: {
                         notra: notra
                     },

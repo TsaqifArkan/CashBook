@@ -117,5 +117,49 @@
             }
         });
     }
+
+    // Konfigurasi Tombol Hapus
+    function hapus(id) {
+        Swal.fire({
+            title: 'Apakah kamu yakin?',
+            text: "Data yang sudah dihapus tidak bisa dikembalikan lagi!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Ya, hapus!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    type: "POST",
+                    url: "<?= base_url('jurnal/delete'); ?>",
+                    data: {
+                        id: id
+                    },
+                    dataType: "JSON",
+                    success: function (response) {
+                        if (response.flashData) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'SUCCESS !',
+                                text: response.flashData
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    location.reload();
+                                }
+                            });
+                            // tableBarang();
+                        }
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        // alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
+                        var tab = window.open('about:blank', '_blank');
+                        tab.document.write(xhr.responseText); // where 'html' is a variable containing your HTML
+                        tab.document.close(); // to finish loading the page
+                    }
+                });
+            }
+        })
+    }
 </script>
 <?= $this->endSection(); ?>

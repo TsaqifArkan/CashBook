@@ -4,15 +4,15 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class BarangModel extends Model
+class BukukasModel extends Model
 {
-    protected $table = 'barang';
-    protected $primaryKey = 'idbrg';
+    protected $table = 'bukukas';
+    protected $primaryKey = 'idbukukas';
     protected $returnType = 'array';
     protected $useSoftDeletes = false;
-    protected $allowedFields = ['nama', 'stokawal', 'stokawal', 'stok', 'fk_idsatuan'];
+    protected $allowedFields = ['tanggal', 'keterangan', 'pemasukan', 'pengeluaran', 'saldo'];
     protected $useTimestamps = true;
     protected $dateFormat = 'datetime';
-    protected $createdField = 'created_at';
+    protected $createdField = '';
     protected $updatedField = '';
 }

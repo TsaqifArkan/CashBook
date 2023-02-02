@@ -47,10 +47,10 @@
                                     <!-- onchange="setSatStok()" -->
                                         <option value="" disabled selected>-- Pilih barang --</option>
                                         <?php foreach ($barang as $i => $b): ?>
-                                            <option id="brg<?= esc($i++); ?>" value="<?= esc($b['idbrg']); ?>"
-                                                data-satuan="<?= esc($b['namaSat']); ?>"
-                                                data-stok="<?= esc($b['stok']); ?>" onchange="$('#stok')[0].value = this.dataset['stok']"><?=
-                                                      esc($b['nama']); ?></option>
+                                                <option id="brg<?= esc($i++); ?>" value="<?= esc($b['idbrg']); ?>"
+                                                    data-satuan="<?= esc($b['namaSat']); ?>"
+                                                    data-stok="<?= esc($b['stok']); ?>" onchange="$('#stok')[0].value = this.dataset['stok']"><?=
+                                                          esc($b['nama']); ?></option>
                                         <?php endforeach; ?>
                                     </select>
                                     <div class="invalid-feedback errorBarang"></div>
@@ -140,6 +140,9 @@
     <div class="row">
         <div class="col">
             <div class="card my-2 shadow">
+                <div class="card-header">
+                    <h6 class="m-1">Simpan Transaksi Barang ke Database </h6>
+                </div>
                 <div class="card-body">
                     <div class="table-responsive">
                         <table class="table table-bordered table-hover">
@@ -174,12 +177,6 @@
 </div>
 <div class="viewModalEditTransaksi" style="display: none;"></div>
 <script>
-    // Select2 Dropdown Feature (newer ver)
-    // $(document).ready(function () {
-    //     $('.barang-select2').select2();
-    // });
-
-
     // DSelect (searchable dropdown) feature
     const config = {
         search: true, // Toggle search feature. Default: false
@@ -196,14 +193,7 @@
     // Counter
     var c = 0;
 
-
-    // Try something new
-    // $('#tambah').click(function(e){
-    //     e.preventDefault();
-        
-    // });
-
-
+    // Submitting form 1 that later will be added to table 2
     $('.f1').submit(function (e) {
     // $('#tambah').click(function (e) {
         e.preventDefault();
@@ -219,6 +209,7 @@
         // }
         // $('#barang').find(":selected")[0].dataset.stok = stokBrg;
 
+        // Sending hidden data (stok) to controller
         let tmpdata = {stok : stokBrg};
         $('#tdat')[0].value = JSON.stringify(tmpdata);
 
@@ -253,14 +244,14 @@
                         $('#jumlah').addClass('is-valid');
                         $('.errorJumlah').html('');
                     }
-                    if (response.error.keterangan) {
-                        $('#keterangan').addClass('is-invalid');
-                        $('.errorKeterangan').html(response.error.keterangan);
-                    } else {
-                        $('#keterangan').removeClass('is-invalid');
-                        $('#keterangan').addClass('is-valid');
-                        $('.errorKeterangan').html('');
-                    }
+                    // if (response.error.keterangan) {
+                    //     $('#keterangan').addClass('is-invalid');
+                    //     $('.errorKeterangan').html(response.error.keterangan);
+                    // } else {
+                    //     $('#keterangan').removeClass('is-invalid');
+                    //     $('#keterangan').addClass('is-valid');
+                    //     $('.errorKeterangan').html('');
+                    // }
                     if (response.error.mutasi) {
                         $('.errorMutasi').html(response.error.mutasi);
                     } else {
@@ -300,7 +291,6 @@
                             <td>${$('input[name="mutasi"]:checked').data('mut')}</td>
                             <td>${f['harga'].value}</td>
                             <td>
-                            <button class="btn btn-warning btn-sm" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Edit" onclick="ubah(${c})"><i class="fa-solid fa-fw fa-pen-to-square"></i></button>
                             <button class="btn btn-danger btn-sm hapus" onclick="hapus(${c})"><i class="fa-solid fa-fw fa-trash"></i></i></button>
                             </td></tr>`;
                             t.innerHTML += ftext;
@@ -369,45 +359,6 @@
                     // } else {
                     //     f.reportValidity();
                     // }
-                    
-                    
-
-                    // // Perhitungan stok sementara agar tidak salah input jumlah untuk data selanjutnya
-                    // let mutasi = $('input[name="mutasi"]:checked').val();
-                    // let stokBrg = +$('#barang')[0].selectedOptions[0].dataset['stok'];
-                    // let jumlah = +$('#jumlah').val();
-                    // let stok = $('#stok').val();
-                    // // console.log(stokBrg);
-                    // // $('#stok').attr('data-abc', 123);
-                    // // console.log($('#stok').attr('data-abc', 123));
-                    // // console.log(jumlah, stok);
-                    // // console.log("AAAAAAAAAAA");
-                    // // console.log($('#barang').find(":selected")[0].dataset.stok);
-                    // if (mutasi == 'D') {
-                    //     stokBrg -= jumlah;
-                    //     $('#barang').find(":selected")[0].dataset.stok = stokBrg;
-                    //     // $('#stok').value = stokBrg;
-                    //     // $('#barang')[0].selectedOptions[0].attr('data-brr', stokBrg);
-                    //     // console.log($('#barang')[0].selectedOptions[0].attr('data-brr', stokBrg));
-                    //     // $('#barang')[0].selectedOptions[0].data('stok', stokBrg);
-                    //     // console.log($('#barang')[0].selectedOptions[0].data('stok', stokBrg));
-                    //     // stok = stokBrg;
-                    //     // console.log(stokBrg, stok);
-                    // } else {
-                    //     stokBrg += jumlah;
-                    //     $('#barang').find(":selected")[0].dataset.stok = stokBrg;
-                    //     // stok = stokBrg;
-                    // }
-
-                    // $('#persekot')[0].selectedOptions[0].dataset['sisa'] -= f['jumlah'].value;
-                    // $('#sisa')[0].value = rupiah($('#persekot')[0].selectedOptions[0].dataset['sisa']);
-
-                    
-                    // console.log(Object.keys(list_transaksi).length);
-
-                    
-
-                    
                 }
             },
             error: function (xhr, ajaxOptions, thrownError) {
@@ -419,30 +370,7 @@
         });
     });
 
-    // Function to Toggle disabled property on Debit/Kredit Input
-    function toggleDeb() {
-        $('#debit2').val('');
-        $('#kredit2').val('');
-        if ($("input[type='radio']:checked").val() == 'Debit') {
-            $('#kredit2').prop('disabled', true);
-            $('#debit2').prop('disabled', false);
-            $('#debit2').prop('required', true);
-            $('#debit2').attr('min', 0);
-        } else {
-            $('#debit2').prop('disabled', true);
-            $('#kredit2').prop('disabled', false);
-            $('#kredit2').prop('required', true);
-            $('#kredit2').attr('min', 0);
-        }
-    }
-
-    // // Function to automatically set satuan and stok barang
-    // function setSatStok() {
-    //     let brg = $('#barang')[0].selectedOptions[0];
-    //     $('#satuan')[0].value = brg.dataset['satuan'];
-    //     $('#stok')[0].value = brg.dataset['stok'];
-    // }
-
+    // Auto set value satuan and stok when barang changed
     $('#barang').change(function(){
         $('#satuan')[0].value = this.selectedOptions[0].dataset['satuan'];
         $('#stok')[0].value = this.selectedOptions[0].dataset['stok'];
@@ -455,34 +383,6 @@
             $('#jumlah').prop('disabled', false);
         }
     }
-
-    // Konfigurasi Tombol Edit
-    function ubah(id) {
-        // $('#tanggal')[0].value = list_transaksi[id]['tanggal'];
-        const data = list_transaksi[id];
-
-        $.ajax({
-            type: "POST",
-            url: "<?= base_url('jurnal/formedit'); ?>",
-            data: {
-                trans: data
-            },
-            dataType: "JSON",
-            success: function (response) {
-                if (response.data) {
-                    $('.viewModalSatuan').html(response.data).show();
-                    $('#modalEditSatuan').modal('show');
-                }
-            },
-            error: function (xhr, ajaxOptions, thrownError) {
-                // alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
-                var tab = window.open('about:blank', '_blank');
-                tab.document.write(xhr.responseText); // where 'html' is a variable containing your HTML
-                tab.document.close(); // to finish loading the page
-            }
-        });
-    }
-
 
     function hapus(id) {
         a = document.getElementById('list' + id);
@@ -503,32 +403,6 @@
         if ($('#barang')[0].selectedOptions[0].value == $("#barang option#brg"+c)[0].value){
             $('#stok')[0].value = $("#barang option#brg"+c)[0].dataset['stok'];
         }
-        // console.log($('#barang')[0].selectedOptions[0]);
-        // console.log($('#barang')[0]);
-        // console.log($("#barang option#brg"+c)[0].dataset['stok']);
-
-        // s = $('#barang')[0].selectedOptions[0].dataset['stok'];
-        
-
-        // $('#barang')[0].selectedOptions[0].dataset['stok'] = +a.dataset['jumlah'] + s;
-        // $('#stok')[0].value = $('#barang')[0].selectedOptions[0].dataset['stok'];
-
-        // let mutasi = $('input[name="mutasi"]:checked').val();
-        // // let stokBrg = +$('#barang')[0].selectedOptions[0].dataset['stok'];
-        // // let jumlah = +$('#jumlah').val();
-        // if (mutasi == 'D') {
-        //     // stokBrg -= jumlah;
-        //     // $('#barang').find(":selected")[0].dataset.stok = stokBrg;
-        //     $('#barang')[0].selectedOptions[0].dataset['stok'] = parseFloat($('#barang')[0].selectedOptions[0].dataset['stok']) - parseFloat($('#jumlah').val());
-        //     // console.log('debit');
-        //     // console.log(typeof($('#barang')[0].selectedOptions[0].dataset['stok']));
-        // } else {
-        //     // stokBrg += jumlah;
-        //     ($('#barang')[0].selectedOptions[0].dataset['stok']) = parseFloat($('#barang')[0].selectedOptions[0].dataset['stok']) + parseFloat($('#jumlah').val());
-        //     // console.log('kredit');
-        //     // console.log(typeof($('#barang')[0].selectedOptions[0].dataset['stok']));
-        // }
-
         a.remove();
         delete list_transaksi[id];
     }
@@ -546,7 +420,6 @@
             this.reportValidity();
         }
     })
-
 
 </script>
 
