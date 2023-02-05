@@ -10,7 +10,7 @@ class BarangModel extends Model
     protected $primaryKey = 'idbrg';
     protected $returnType = 'array';
     protected $useSoftDeletes = false;
-    protected $allowedFields = ['nama', 'stokawal', 'stokawal', 'stok', 'fk_idsatuan'];
+    protected $allowedFields = ['nama', 'stokawal', 'hpp', 'stok', 'fk_idsatuan'];
     protected $useTimestamps = true;
     protected $dateFormat = 'datetime';
     protected $createdField = 'created_at';

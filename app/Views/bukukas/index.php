@@ -30,22 +30,50 @@
                             <h6 class="m-1 fw-bold text-uppercase">Tabel Buku Kas</h6>
                         </div>
                     </div>
-                    
+                    <div class="row justify-content-around">
+                        <div class="col-3">
+                            <label for="awal">Tanggal Awal</label>
+                            <input type="date" class="form-control mb-3 tanggal" id="awal" value="<?= $now; ?>">
+                        </div>
+                        <div class="col-3">
+                            <label for="akhir">Tanggal Akhir</label>
+                            <input type="date" class="form-control mb-3 tanggal" id="akhir" value="<?= $now; ?>">
+                        </div>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <div class="sectiondatabukukas">
-
+                <div class="card-body p-4">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover" id="dataTable-Bukukas">
+                            <thead class="ave-bg-th">
+                                <tr class="text-center">
+                                    <th class="text-uppercase fw-bold head-no">No</th>
+                                    <th class="text-uppercase fw-bold">Tanggal</th>
+                                    <th class="text-uppercase fw-bold">Keterangan</th>
+                                    <th class="text-uppercase fw-bold">Pemasukan</th>
+                                    <th class="text-uppercase fw-bold">Pengeluaran</th>
+                                    <th class="text-uppercase fw-bold">Saldo</th>
+                                </tr>
+                            </thead>
+                            <tbody class="sectiondatabukukas">
+                                <?= view('bukukas/tablebukukas', $data); ?>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-<!-- <div class="viewModalSaldo" style="display: none;"></div> -->
 <script>
-   function tableBukuKas() {
+    $('.tanggal').change(function () {
+        $('.sectiondatabukukas').html('');
         $.ajax({
+            method: "POST",
             url: "<?= base_url('bukukas/getData'); ?>",
+            data: {
+                awal: $('#awal').val(),
+                akhir: $('#akhir').val()
+            },
             dataType: "JSON",
             success: function (response) {
                 $('.sectiondatabukukas').html(response.data);
@@ -57,10 +85,6 @@
                 tab.document.close(); // to finish loading the page
             }
         });
-    }
-
-    $(document).ready(function () {
-        tableBukuKas();
     });
 </script>
 <?= $this->endSection(); ?>

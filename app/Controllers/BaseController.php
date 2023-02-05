@@ -7,6 +7,7 @@ use CodeIgniter\HTTP\CLIRequest;
 use CodeIgniter\HTTP\IncomingRequest;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
+use NumberFormatter;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -44,6 +45,7 @@ abstract class BaseController extends Controller
     // protected $session;
     protected $validation;
     protected $yearnow;
+    protected $currencyfmt;
 
     /**
      * Constructor.
@@ -57,6 +59,7 @@ abstract class BaseController extends Controller
 
         // E.g.: $this->session = \Config\Services::session();
         $this->validation = \Config\Services::validation();
+        $this->currencyfmt = numfmt_create('ID_id', NumberFormatter::CURRENCY);
         $this->yearnow = session()->get('ann');
     }
 }

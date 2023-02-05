@@ -31,6 +31,15 @@
                     </select>
                     <div class="invalid-feedback errorSatuan"></div>
                 </div>
+                <div class="form-group mb-3">
+                    <label for="hpp" class="form-label">Harga Pokok Pembelian</label>
+                    <div class="input-group">
+                        <span class="input-group-text">Rp</span>
+                        <input type="number" class="form-control" name="hpp" id="hpp" placeholder="(harga beli)">
+                        <span class="input-group-text">,00</span>
+                        <div class="invalid-feedback errorHpp"></div>
+                    </div>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -87,6 +96,14 @@
                             $('#satuan').removeClass('is-invalid');
                             $('#satuan').addClass('is-valid');
                             $('.errorSatuan').html('');
+                        }
+                        if (response.error.hpp) {
+                            $('#hpp').addClass('is-invalid');
+                            $('.errorHpp').html(response.error.hpp);
+                        } else {
+                            $('#hpp').removeClass('is-invalid');
+                            $('#hpp').addClass('is-valid');
+                            $('.errorHpp').html('');
                         }
 
                     } else {

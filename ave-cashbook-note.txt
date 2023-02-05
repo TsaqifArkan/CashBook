@@ -124,3 +124,432 @@ TRANSAKSI.PHP (VIEW JURNAL)
     //     // console.log(typeof($('#barang')[0].selectedOptions[0].dataset['stok']));
     // }
 </script>
+
+INDEX.PHP (VIEW JURNAL)
+<script>
+    function bulan(e) {
+        // let awal = e.target.value;
+        // console.log(awal);
+        var bulan = e.target.value;
+        // var tglakhir = $('#akhir').val();
+        tableJurnal(bulan);
+    }
+
+    // function akhirOnChange(e) {
+    //     var tglawal = $('#awal').val();
+    //     var tglakhir = e.target.value;
+    //     tableJurnal(tglawal, tglakhir);
+    // }
+
+    function tableJurnal(bulan) {
+        $.ajax({
+            url: "<?= base_url('jurnal/getData'); ?>",
+            data: {
+                bulan: bulan
+            },
+            method: "POST",
+            dataType: "JSON",
+            success: function (response) {
+                $('.sectiondatajurnal').html(response.data);
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                // alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
+                var tab = window.open('about:blank', '_blank');
+                tab.document.write(xhr.responseText); // where 'html' is a variable containing your HTML
+                tab.document.close(); // to finish loading the page
+            }
+        });
+    }
+
+    $(document).ready(function () {
+        // Get data from Bulan
+        var bulan = $('#bulan').val();
+        // var tglakhir = $('#akhir').val();
+        // console.log(tglawal, tglakhir);
+        tableJurnal(bulan);
+
+        // >> Konfigurasi flash data
+        const flashData = $('.flash-data').data('flashdata');
+        // console.log(flashData);
+        if (flashData) {
+            Swal.fire({
+                title: 'SUCCESS !',
+                text: flashData,
+                icon: 'success'
+            });
+        }
+    });
+
+    // function checkEmpty() {
+    //     if (<?php // echo empty($data); ?>) {
+    //         const emptyData = `<tr><td colspan='10' class='text-center'>
+    //         Tidak ada data yang tersedia pada tabel ini</td></tr>`;
+    //         $('.sectiondatajurnal').html(emptyData);
+    //     }
+    // }
+    function checkEmpty(array) {
+        if (!array.length) {
+            const emptyData = `<tr><td colspan='10' class='text-center'>
+            Tidak ada data yang tersedia pada tabel ini</td></tr>`;
+            $('.sectiondatajurnal').html(emptyData);
+        }
+    }
+    <!-- INSIDE AJAX ONCHANGE TANGGAL (WHEN SUCCESS) -->
+    // if (response.data) checkEmpty(response.view);
+    // else $('.sectiondatajurnal').html(response.view);
+</script>
+
+TABLEJURNAL.PHP
+<!-- Konfigurasi input search -->
+<!-- <div class="container">
+    <div class="input-group my-3">
+        <span class="input-group-text">
+            Search
+        </span>
+        <input type="text" class="form-control" name="searchtext" id="searchtext" placeholder="Input keyword here.."
+            aria-label="keyword">
+        <span class="input-group-text">
+            <i class="fa-solid fa-fw fa-magnifying-glass"></i>
+        </span>
+    </div>
+</div> -->
+
+<!-- BACKUP TBODY -->
+<tbody class="srch">
+    <?php
+    // $dateprev = $data[0]['created_at'];
+    $dateprev = "";
+    $notraprev = 0;
+    $i = 0;
+    $c = "";
+    $row = ""; ?>
+    <?php $j = 1; ?>
+    <?php foreach ($data as $m => $d): ?>
+        <?php // $datenow = $d['created_at']; ?>
+        <?php $notranow = $d['notrans']; ?>
+        <?php // if ($dateprev != $datenow): ?>
+        <?php if ($notraprev != $notranow): ?>
+            <?php $i++; ?>
+            <?php $c = $i; ?>
+            <?php // $dateprev = $datenow; ?>
+            <?php $notraprev = $notranow; ?>
+            <?php //$row = $nRow[$c]['noRow']; ?>
+            <?php $firstRC = "<td rowspan='$row'>$c</td>"; ?>
+            <?php $lastRC = "<td rowspan=" . $row . ">
+            <a href=" . base_url('jurnal/edit') . '/' . esc($notranow) . " class='btn btn-warning btn-sm' data-bs-toggle='tooltip' data-bs-placement='bottom' title='Edit'><i
+                class='fa-solid fa-pen-to-square'></i></a>
+                <button class='btn btn-danger btn-sm' data-bs-toggle='tooltip' data-bs-placement='bottom'
+                title='Hapus' onclick='hapus(" . esc($notranow) . ")'><i
+                    class='fa-solid fa-trash'></i></button>
+            </td>"; ?>
+        <?php else: ?>
+            <?php $c = ""; ?>
+            <?php $row = ""; ?>
+            <?php $firstRC = ""; ?>
+            <?php $lastRC = ""; ?>
+        <?php endif; ?>
+        <tr>
+            <?php // echo $firstRC; ?>
+            <td><?php echo $m + 1; ?></td>
+            <td><?= esc($d['tanggal']); ?></td>
+            <td><?= esc($d['keterangan']); ?></td>
+            <td><?= esc($d['namabarang']); ?></td>
+            <td><?= esc($d['jumlah']); ?></td>
+            <td><?= esc($d['namasatuan']); ?></td>
+            <td><?=(esc($d['dk']) == 'D' ? 'Pemasukan' : 'Pengeluaran'); ?></td>
+            <td><?= esc($d['harga']); ?></td>
+            <td><?= esc($d['total']); ?></td>
+            <td></td>
+            <?php // echo $lastRC; ?>
+        </tr>
+    <?php endforeach; ?>
+</tbody>
+<script>
+    $(document).ready(function () {
+        // $('#tableJurnal').click(false);
+        // $('#tableJurnal').click(function () { return false; });
+    });
+
+    // function searchData(query) {
+    //     $.ajax({
+    //         type: "POST",
+    //         url: "<?php // echo base_url(); ?>/jurnal/search",
+    //         data: {
+    //             query: query
+    //         },
+    //         // dataType: "dataType",
+    //         success: function (response) {
+    //             $('.srch').html(response);
+    //         }
+    //     });
+    // }
+
+    // $('#searchtext').keyup(function () {
+    //     let search = $(this).val();
+    //     if (search != '') {
+    //         searchData(search);
+    //     }
+    //     else {
+    //         searchData();
+    //     }
+    // });
+
+    // Konfigurasi Datatable Jurnal
+    // $(document).ready(function () {
+    //     $('#dataTable-Jurnal').DataTable({
+    //         "pageLength": 25,
+    //         "columnDefs": [
+    //             {
+    //                 targets: "_all",
+    //                 className: 'dt-head-center'
+    //             },
+    //             {
+    //                 // targets: [0, 2],
+    //                 targets: "_all",
+    //                 className: 'dt-body-center'
+    //             }
+    //         ]
+    //     });
+    // });
+</script>
+
+JURNAL.PHP (CONTROLLER)
+<!-- BACKUP FUNC INDEX() 04/02/2023 09.00 -->
+    public function index()
+    {
+        $data['title'] = 'Jurnal';
+        // $data['now'] = date('Y-m') . '-01';
+        $data['now'] = date('Y-m-d');
+        $dataJurnal = $this->jurnalModel->getJurnal($data['now'], $data['now']);
+        $data['data'] = $dataJurnal;
+
+        // if (empty($data['data'])) {
+        //     $data['check'] = true;
+        //     $data['view'] = array();
+        // } else {
+        //     $data['check'] = false;
+        //     $data['view'] = $data['data'];
+        // }
+        // $coba = $this->db->query('SELECT * FROM bukukas')->getResultArray();
+        // $dataBK = $this->bukukasModel->builder()->
+        // dd($coba);
+        // if (isset($coba)) {
+        // $data['initSaldo'] = 0;
+        // } else {
+
+        // }
+        // $stillNew = isset($coba);
+        // $data['initSaldo'] = 0;
+        // $thisyear = $this->yearnow == date('Y');
+        // $data['datemin'] = $this->yearnow . '-01';
+        // $data['datemax'] = $thisyear ? date('Y-m') : $this->yearnow . '-12';
+        // $data['now'] = $thisyear ? date('Y-m') : $data['datemax'];
+
+        // $data['datemin'] = $this->yearnow . '-01-01';
+        // $data['datemax'] = $thisyear ? date('Y-m-d') : $this->yearnow . '-12-31';
+        // $data['now'] = $thisyear ? date('Y-m-d') : $data['datemax'];
+        // $data['data'] = $thisyear ? $this->jurnalModel->getJurnal(date('Y-m-d'), date('Y-m-d')) : $this->jurnalModel->getJurnal($data['datemax'], $data['datemax']);
+        // $data['dateawal'] = date_format(date_create("2000-01-01"), 'Y-m-d');
+
+        return view('jurnal/index', $data);
+    }
+
+<!-- BACKUP FUNC INITSALDO() 04/02/2023 09.00 -->
+    public function initSaldo()
+    {
+        if ($this->request->isAJAX()) {
+            $initSaldo = $this->request->getPost('initSaldo');
+            $valid = $this->validate([
+                'initSaldo' => [
+                    'label' => 'Saldo Awal',
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => '{field} tidak boleh kosong!'
+                    ]
+                ]
+            ]);
+            if (!$valid) {
+                $msg = [
+                    'error' => [
+                        'initSaldo' => $this->validation->getError('initSaldo')
+                    ]
+                ];
+            } else {
+                $inputData = [
+                    'nama' => $this->request->getPost('nama'),
+                    'stokawal' => $this->request->getPost('stokAwal'),
+                    'fk_idsatuan' => $this->request->getPost('satuan')
+                ];
+                $this->barangModel->insert($inputData);
+                $msg['flashData'] = 'Saldo awal berhasil disimpan.';
+            }
+            echo json_encode($msg);
+        }
+    }
+
+<!-- BACKUP FUNC GETDATA() 04/02/2023 09.00 -->
+    public function getData()
+    {
+        if ($this->request->isAJAX()) {
+            // Before implement DateRange
+            // $query = $this->jurnalModel->findAll();
+            // foreach ($query as $i => $q) {
+            //     $query2 = $this->barangModel->builder()->select('nama, fk_idsatuan')->where('idbrg', $q['fk_idbrg'])->get()->getResultArray()[0];
+            //     $query3 = $this->satuanModel->builder()->select('nama')->where('idsatuan', $query2['fk_idsatuan'])->get()->getResultArray()[0];
+            //     $query[$i]['namaBrg'] = $query2['nama'];
+            //     $query[$i]['namaSat'] = $query3['nama'];
+            // }
+            // $data['data'] = $query;
+            // UNTIL THIS LINE
+
+            // Try to implement DateRange
+            $awal = $this->request->getPost('awal');
+            $akhir = $this->request->getPost('akhir');
+            $dataJurnal = $this->jurnalModel->getJurnal($awal, $akhir);
+            // dd($dataJurnal);
+
+            // $bulan = $this->request->getPost('bulan');
+            // $bulan = $bulan . '-' . date('d');
+            // $bulan = '2023-01-01';
+            // dd($bulan);
+            // $bulan = "2023-01-01";
+            // dd($bulan);
+
+            // Update the table on 02/02/2023
+            // Changelog : add total on Jurnal table
+            // $data['data'] = $this->jurnalModel->getJurnal($bulan);
+            // $dataJurnal = $this->jurnalModel->getJurnal($bulan);
+            // $total = 0;
+            // foreach ($dataJurnal as $i => $d) {
+            //     $total = $d['jumlah'] * $d['harga'];
+            //     $dataJurnal[$i]['total'] = $total;
+            // }
+            $data['data'] = $dataJurnal;
+            // dd($data['data']);
+
+            // Configure Rowspan 
+            // $data['cRow'] = $this->jurnalModel->builder()->selectCount('created_at', 'countRow')->groupBy('created_at')->get()->getResultArray();
+            // dd($data['cRow']);
+            // Configure Rowspan by NoTrans
+            // $data['nRow'] = $this->jurnalModel->builder()->selectCount('notrans', 'noRow')->groupBy('notrans')->get()->getResultArray();
+            // dd($data);
+            // if (empty($data['data'])) {
+            //     $msg['data'] = true;
+            //     $msg['view'] = array();
+            // } else {
+            //     $msg['data'] = false;
+            //     $msg['view'] = view('jurnal/tablejurnal', $data);
+            // }
+            $msg['data'] = view('jurnal/tablejurnal', $data);
+            echo json_encode($msg);
+        }
+    }
+
+<!-- BACKUP FUNC SEARCH() 04/02/2023 09.00 -->
+    // public function search()
+    // {
+    //     if ($this->request->isAJAX()) {
+    //         $output = '';
+    //         $keyword = '';
+    //         $keyword = $this->request->getPost('query');
+    //         $data = $this->jurnalModel->search_jurnal($keyword);
+    //         if (count($data) > 0){
+    //             foreach($data as $i => $d){
+    //                 '<tr>
+    //                     <td>'.$i++.'</td>
+    //                     <td>'.$d['tanggal'].'</td>
+    //                     <td>'.$d['keterangan'].'</td>
+    //                     <td>'.$d[''].'</td>
+    //                     '
+    //             }
+    //         }
+    //     }
+    // }
+
+<!-- BACKUP FUNC INDEX() BUKUKAS.PHP 04/02/2023 23.30 -->
+    public function index()
+    {
+        $data['title'] = 'Buku Kas';
+        $now = date('Y-m-d');
+        // Fetch data from session
+        $id = session('admin_session.id');
+
+        $saldo = $this->adminModel->builder()->select('saldoawal')->where('idadmin', $id)->get()->getResultArray()[0]['saldoawal'];
+        // Hanya untuk menghitung Saldo Sebelumnya saja!
+        $query = $this->jurnalModel->builder()->select('dk, jumlah, harga')->where('tanggal <', $now)->get()->getResultArray();
+        foreach ($query as $i => $q) {
+            $total = $q['jumlah'] * $q['harga'] * (($q['dk'] == 'D') ? 1 : -1);
+            $saldoNow = $saldo + $total;
+            $saldo = $saldoNow;
+            $query[$i]['total1'] = $total;
+            $query[$i]['saldo1'] = $saldoNow;
+        }
+        $data['saldoA'] = numfmt_format($this->currencyfmt, $saldo);
+
+        // Saldo Date Range
+        $query2 = $this->jurnalModel->builder()->select('tanggal, keterangan, dk, jumlah, harga')->where("tanggal BETWEEN '$now' AND '$now'")->get()->getResultArray();
+        foreach ($query2 as $i => $q) {
+            $total = $q['jumlah'] * $q['harga'] * (($q['dk'] == 'D') ? 1 : -1);
+            $saldoNow = $saldo + $total;
+            $saldo = $saldoNow;
+            $query2[$i]['tanggal'] = date_format(date_create($q['tanggal']), "d-M-Y");
+            $query2[$i]['total'] = numfmt_format($this->currencyfmt, $total);
+            $query2[$i]['saldo'] = numfmt_format($this->currencyfmt, $saldoNow);
+        }
+        $data['data'] = $query2;
+        $data['now'] = $now;
+        // dd($data);
+        return view('bukukas/index', $data);
+    }
+
+<!-- BACKUP FUNC getData() BUKUKAS.PHP 04/02/2023 23.30 -->
+    public function getData()
+    {
+        if ($this->request->isAJAX()) {
+            // Try to implement DateRange
+            $awal = $this->request->getPost('awal');
+            $akhir = $this->request->getPost('akhir');
+
+            // GET ALL JURNAL
+            $jurnalData = $this->jurnalModel->findAll();
+            $saldo = $this->adminModel->builder()->select('saldoawal')->where('idadmin', 1)->get()->getResultArray()[0]['saldoawal'];
+            // Hanya untuk menghitung Saldo Sebelumnya saja!
+            $query = $this->jurnalModel->builder()->select('dk, jumlah, harga')->where('tanggal <', $awal)->get()->getResultArray();
+            foreach ($query as $i => $q) {
+                $total = $q['jumlah'] * $q['harga'] * (($q['dk'] == 'D') ? 1 : -1);
+                $saldoNow = $saldo + $total;
+                $saldo = $saldoNow;
+                $query[$i]['total1'] = $total;
+                $query[$i]['saldo1'] = $saldoNow;
+            }
+            // $data['oneDat'] = $query;
+            // dd($data);
+
+            // Serupa, yakni menghitung data dan saldo sekarang
+            // $query2 = $this->jurnalModel->builder()->select('dk, jumlah, harga')->where('tanggal >=', date('Y-m-d'))->get()->getResultArray();
+            $query2 = $this->jurnalModel->builder()->select('tanggal, keterangan, dk, jumlah, harga')->where("tanggal BETWEEN '$awal' AND '$akhir'")->get()->getResultArray();
+            $data['saldoA'] = $saldo;
+            foreach ($query2 as $i => $q) {
+                $total = $q['jumlah'] * $q['harga'] * (($q['dk'] == 'D') ? 1 : -1);
+                $saldoNow = $saldo + $total;
+                $saldo = $saldoNow;
+                $query2[$i]['total'] = $total;
+                $query2[$i]['saldo'] = $saldoNow;
+            }
+            $data['data'] = $query2;
+            // dd($data);
+            // dd($jurnalData);
+
+            $kasData = $this->bukukasModel->findAll();
+            // $dataBrg = $this->barangModel->findAll();
+            // Get Data Satuan from DB
+            // foreach ($dataBrg as $i => $data) {
+            //     $idSatuan = $data['fk_idsatuan'];
+            //     $namaSatuan = $this->satuanModel->builder()->select('nama')->where('idsatuan', $idSatuan)->get()->getResultArray()[0]['nama'];
+            //     $dataBrg[$i]['namaSatuan'] = $namaSatuan;
+            // }
+            // $data['datas'] = $kasData;
+            $msg['data'] = view('bukukas/tablebukukas', $data);
+            echo json_encode($msg);
+        }
+    }

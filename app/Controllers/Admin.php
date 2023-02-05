@@ -140,4 +140,48 @@ class Admin extends BaseController
             echo json_encode($msg);
         }
     }
+
+    public function formSalAw()
+    {
+        if ($this->request->isAJAX()) {
+            // Fetch data from session and database
+            $id = session('admin_session.id');
+            $data['saldo'] = $this->adminModel->builder()->select('saldoawal')->where('idadmin', $id)->get()->getResultArray()[0]['saldoawal'];
+            $msg['data'] = view('admin/modalsaldo', $data);
+            echo json_encode($msg);
+        }
+    }
+
+    public function ubahSaldo()
+    {
+        if ($this->request->isAJAX()) {
+            // Fetch data from session and database
+            $id = session('admin_session.id');
+            // Fetch data from URL POST
+            $initSaldo = $this->request->getPost('initSaldo');
+            $valid = $this->validate([
+                'initSaldo' => [
+                    'label' => 'Saldo Awal',
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => '{field} tidak boleh kosong!'
+                    ]
+                ]
+            ]);
+            if (!$valid) {
+                $msg = [
+                    'error' => [
+                        'initSaldo' => $this->validation->getError('initSaldo')
+                    ]
+                ];
+            } else {
+                $updatedData = [
+                    'saldoawal' => $initSaldo
+                ];
+                $this->adminModel->update($id, $updatedData);
+                $msg['flashData'] = 'Saldo awal kas berhasil diubah.';
+            }
+            echo json_encode($msg);
+        }
+    }
 }

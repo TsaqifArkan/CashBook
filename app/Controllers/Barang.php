@@ -76,6 +76,13 @@ class Barang extends BaseController
                     'errors' => [
                         'required' => 'Pilih salah satu {field}!'
                     ]
+                ],
+                'hpp' => [
+                    'label' => 'HPP',
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => '{field} tidak boleh kosong!'
+                    ]
                 ]
             ]);
             if (!$valid) {
@@ -83,7 +90,8 @@ class Barang extends BaseController
                     'error' => [
                         'nama' => $this->validation->getError('nama'),
                         'stokAwal' => $this->validation->getError('stokAwal'),
-                        'satuan' => $this->validation->getError('satuan')
+                        'satuan' => $this->validation->getError('satuan'),
+                        'hpp' => $this->validation->getError('hpp')
                     ]
                 ];
             } else {
@@ -92,6 +100,7 @@ class Barang extends BaseController
                     'nama' => $this->request->getPost('nama'),
                     'stokawal' => $this->request->getPost('stokAwal'),
                     'stok' => $this->request->getPost('stokAwal'),
+                    'hpp' => $this->request->getPost('hpp'),
                     'fk_idsatuan' => $this->request->getPost('satuan')
                 ];
                 $this->barangModel->insert($inputData);
@@ -139,6 +148,13 @@ class Barang extends BaseController
                     'errors' => [
                         'required' => 'Pilih salah satu {field}!'
                     ]
+                ],
+                'hpp' => [
+                    'label' => 'HPP',
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => '{field} tidak boleh kosong!'
+                    ]
                 ]
             ]);
             if (!$valid) {
@@ -146,13 +162,15 @@ class Barang extends BaseController
                     'error' => [
                         'nama' => $this->validation->getError('nama'),
                         'stokAwal' => $this->validation->getError('stokAwal'),
-                        'satuan' => $this->validation->getError('satuan')
+                        'satuan' => $this->validation->getError('satuan'),
+                        'hpp' => $this->validation->getError('hpp')
                     ]
                 ];
             } else {
                 $updatedData = [
                     'nama' => $this->request->getPost('nama'),
                     'stokawal' => $this->request->getPost('stokAwal'),
+                    'hpp' => $this->request->getPost('hpp'),
                     'fk_idsatuan' => $this->request->getPost('satuan')
                 ];
                 $this->barangModel->update($id, $updatedData);
@@ -176,9 +194,11 @@ class Barang extends BaseController
     public function detail($id = 0)
     {
         $data['title'] = 'Detail Barang';
-        $dataBarang = $this->barangModel->builder()->select('nama, stokawal')->where('idbrg', $id)->get()->getResultArray()[0];
+        $dataBarang = $this->barangModel->builder()->select('nama, stokawal, hpp')->where('idbrg', $id)->get()->getResultArray()[0];
         $data['namaBarang'] = $dataBarang['nama'];
-        $data['stokawalBrg'] = $dataBarang['stokawal'];
+        $stokAwal = $dataBarang['stokawal'];
+        $data['stokawalBrg'] = $stokAwal;
+        $data['hppBrg'] = $dataBarang['hpp'];
         $detail = $this->jurnalModel->builder()->select('*')->where('fk_idbrg', $id)->get()->getResultArray();
         $saldo = 0;
         foreach ($detail as $i => $d) {
@@ -187,7 +207,8 @@ class Barang extends BaseController
             $idSat = $query['fk_idsatuan'];
             $query2 = $this->satuanModel->builder()->select('*')->where('idsatuan', $idSat)->get()->getResultArray()[0];
             // Count StokNow
-            $stok = $data['stokawalBrg'] + ($d['jumlah'] * ($d['dk'] == 'D' ? -1 : 1));
+            $stok = $stokAwal + ($d['jumlah'] * ($d['dk'] == 'D' ? -1 : 1));
+            $stokAwal = $stok;
             // Count Saldo
             $total = $d['jumlah'] * $d['harga'];
             $pemasukan = ($d['dk'] == 'D') ? $total : '';

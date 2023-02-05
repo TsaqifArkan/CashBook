@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use CodeIgniter\Model;
+use NumberFormatter;
 
 class JurnalModel extends Model
 {
@@ -39,23 +40,52 @@ class JurnalModel extends Model
         return $search->get()->getResultArray();
     }
 
-    public function getJurnal($bulan)
+    public function getJurnal($awal, $akhir)
     {
-        // $currencyfmt = numfmt_create('ID_id', NumberFormatter::CURRENCY);
+        $currencyfmt = numfmt_create('ID_id', NumberFormatter::CURRENCY);
         $db = \Config\Database::connect();
 
-        $q = $db->query("CALL get_jurnal(DATE('$bulan'))");
+        $q = $db->query("CALL get_jurnal(DATE('$awal'), DATE('$akhir'))");
         $res = $q->getResultArray();
+        foreach ($res as $i => $d) {
+            $total = $d['jumlah'] * $d['harga'];
+            $res[$i]['tanggal'] = date_format(date_create($d['tanggal']), "d-M-Y");
+            $res[$i]['total'] = numfmt_format($currencyfmt, $total);
+            $res[$i]['harga'] = numfmt_format($currencyfmt, $d['harga']);
+        }
+        return $res;
+    }
+
+    public function getBukuKas($id = 0, $awal, $akhir)
+    {
+        $adminModel = new AdminModel();
+        $currencyfmt = numfmt_create('ID_id', NumberFormatter::CURRENCY);
+
+        // Initial Step
+        $saldo = $adminModel->builder()->select('saldoawal')->where('idadmin', $id)->get()->getResultArray()[0]['saldoawal'];
+        // Hanya untuk menghitung Saldo Sebelumnya saja! | First Step
+        $query = $this->builder()->select('dk, jumlah, harga')->where('tanggal <', $awal)->get()->getResultArray();
+        foreach ($query as $i => $q) {
+            $total = $q['jumlah'] * $q['harga'] * (($q['dk'] == 'D') ? 1 : -1);
+            $saldoNow = $saldo + $total;
+            $saldo = $saldoNow;
+            $query[$i]['total1'] = $total;
+            $query[$i]['saldo1'] = $saldoNow;
+        }
+        $res['saldoA'] = numfmt_format($currencyfmt, $saldo);
+
+        // Saldo Date Range | Second Step
+        $query2 = $this->builder()->select('tanggal, keterangan, dk, jumlah, harga')->where("tanggal BETWEEN '$awal' AND '$akhir'")->get()->getResultArray();
+        foreach ($query2 as $i => $q) {
+            $total = $q['jumlah'] * $q['harga'] * (($q['dk'] == 'D') ? 1 : -1);
+            $saldoNow = $saldo + $total;
+            $saldo = $saldoNow;
+            $query2[$i]['tanggal'] = date_format(date_create($q['tanggal']), "d-M-Y");
+            $query2[$i]['total'] = numfmt_format($currencyfmt, $total);
+            $query2[$i]['saldo'] = numfmt_format($currencyfmt, $saldoNow);
+        }
+        $res['data'] = $query2;
         // dd($res);
-        // foreach ($res as $i => $d) {
-        //     $deb = $res[$i]['debit'];
-        //     $kre = $res[$i]['kredit'];
-
-        //     $res[$i]['debit'] = $deb == null ? '-' : numfmt_format($currencyfmt, $deb);
-        //     $res[$i]['kredit'] = $kre == null ? '-' : numfmt_format($currencyfmt, $kre);
-        //     $res[$i]['saldo'] = numfmt_format($currencyfmt, $res[$i]['saldo']);
-        // }
-
         return $res;
     }
 }

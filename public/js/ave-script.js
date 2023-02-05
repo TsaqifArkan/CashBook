@@ -7,3 +7,15 @@ function rupiah(n){
 
     return 'Rp '+n+t+',00';
 }
+
+// SweetAlert2 - JQuery
+// >> Konfigurasi flash data
+const flashData = $('.flash-data').data('flashdata');
+// console.log(flashData);
+if(flashData){
+    Swal.fire({
+        icon : 'success',
+        title : 'SUCCESS !',
+        text : flashData
+    });
+}

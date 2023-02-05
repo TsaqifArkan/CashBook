@@ -1,6 +1,8 @@
 <?= $this->extend('templates/index'); ?>
 <?= $this->section('page-content'); ?>
 
+<?php //dd(is_null($data), isset($data), empty($data)); ?>
+
 <div class="alert alert-breadcrumb-ave" role="alert">
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb mb-0 fs-6">
@@ -23,13 +25,13 @@
 
     <div class="row mb-3">
         <div class="col-6 text-center">
-            <a href="<?= base_url('jurnal/transaksi'); ?>" class="btn btn-success">
+            <a href="<?= base_url('jurnal/jualbeli'); ?>" class="btn btn-success">
                 <span class="me-1"><i class="fa-solid fa-fw fa-circle-plus"></i></span>
                 <span>Jual/Beli Barang</span>
             </a>
         </div>
         <div class="col-6 text-center">
-            <a href="<?= base_url('jurnal/other'); ?>" class="btn btn-success">
+            <a href="<?= base_url('jurnal/lainnya'); ?>" class="btn btn-success">
                 <span class="me-1"><i class="fa-solid fa-fw fa-circle-plus"></i></span>
                 <span>Transaksi Lainnya</span>
             </a>
@@ -45,36 +47,55 @@
                             <h6 class="m-1 fw-bold text-uppercase">Tabel Jurnal</h6>
                         </div>
                     </div>
-                    <div class="row justify-content-center">
-                        <div class="col-4">
-                            <label for="bulan">Periode Bulan</label>
-                            <input type="month" class="form-control mb-3 tanggal" id="bulan" value="<?= $now ?>"
-                                onchange="bulan(event);">
+                    <div class="row justify-content-around">
+                        <div class="col-3">
+                            <label for="awal">Tanggal Awal</label>
+                            <input type="date" class="form-control mb-3 tanggal" id="awal" value="<?= $now; ?>">
                         </div>
-                        <!-- <div class="col">
-                            <label for="awal">Tanggal Akhir</label>
-                            <input type="date" class="form-control mb-3 tanggal" id="akhir" min='<?php // echo $datemin ?>'
-                                max='<?php // echo $datemax ?>' value="<?php // echo $now ?>" onchange="akhirOnChange(event);">
-                        </div> -->
+                        <div class="col-3">
+                            <label for="akhir">Tanggal Akhir</label>
+                            <input type="date" class="form-control mb-3 tanggal" id="akhir" value="<?= $now; ?>">
+                        </div>
                     </div>
                 </div>
-                <div class="card-body">
-                    <div class="sectiondatajurnal">
-
+                <div class="card-body p-4">
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="dataTable-Jurnal">
+                            <thead class="ave-bg-th" id="tableJurnal">
+                                <tr class="text-center">
+                                    <th class="text-uppercase fw-bold head-no">No</th>
+                                    <th class="text-uppercase fw-bold">Tanggal</th>
+                                    <th class="text-uppercase fw-bold">Keterangan</th>
+                                    <th class="text-uppercase fw-bold">Nama Barang</th>
+                                    <th class="text-uppercase fw-bold">Jumlah</th>
+                                    <th class="text-uppercase fw-bold">Satuan</th>
+                                    <th class="text-uppercase fw-bold">Jenis Transaksi</th>
+                                    <th class="text-uppercase fw-bold">Harga</th>
+                                    <th class="text-uppercase fw-bold">Total</th>
+                                    <th class="text-uppercase fw-bold head-aksi-klas">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody class="sectiondatajurnal">
+                                <?= view('jurnal/tablejurnal', $data); ?>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+<div class="viewModalEditTrans" style="display: none;"></div>
 <script>
-    function tableJurnal(bulan) {
+    $('.tanggal').change(function () {
+        $('.sectiondatajurnal').html('');
         $.ajax({
+            method: "POST",
             url: "<?= base_url('jurnal/getData'); ?>",
             data: {
-                bulan: bulan
+                awal: $('#awal').val(),
+                akhir: $('#akhir').val()
             },
-            method: "POST",
             dataType: "JSON",
             success: function (response) {
                 $('.sectiondatajurnal').html(response.data);
@@ -86,41 +107,6 @@
                 tab.document.close(); // to finish loading the page
             }
         });
-    }
-
-    function bulan(e) {
-        // let awal = e.target.value;
-        // console.log(awal);
-        var bulan = e.target.value;
-        // var tglakhir = $('#akhir').val();
-        tableJurnal(bulan);
-    }
-
-    $(document).ready(function () {
-        // Get data from Bulan
-        var bulan = $('#bulan').val();
-        // var tglakhir = $('#akhir').val();
-        // console.log(tglawal, tglakhir);
-        tableJurnal(bulan);
-
-        // >> Konfigurasi flash data
-        const flashData = $('.flash-data').data('flashdata');
-        // console.log(flashData);
-        if (flashData) {
-            Swal.fire({
-                title: 'SUCCESS !',
-                text: flashData,
-                icon: 'success'
-            });
-        }
-
     });
-
-    // function akhirOnChange(e) {
-    //     var tglawal = $('#awal').val();
-    //     var tglakhir = e.target.value;
-    //     tableJurnal(tglawal, tglakhir);
-    // }
 </script>
-
 <?= $this->endSection(); ?>

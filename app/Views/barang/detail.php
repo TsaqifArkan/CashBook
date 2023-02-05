@@ -59,7 +59,7 @@
                                     <td></td>
                                     <td></td>
                                     <td><?= esc($stokawalBrg); ?></td>
-                                    <td></td>
+                                    <td><?= esc($hppBrg); ?></td>
                                 </tr>
                                 <?php foreach ($data as $i => $d): ?>
                                     <tr>

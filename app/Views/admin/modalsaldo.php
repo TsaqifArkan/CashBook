@@ -1,45 +1,41 @@
 <!-- Modal -->
-<div class="modal fade" id="modalEditProfil" tabindex="-1" aria-labelledby="judulModalAdmin" aria-hidden="true">
+<div class="modal fade" id="modalSaldo" tabindex="-1" aria-labelledby="modalSaldoLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="judulModalAdmin">Edit Profil Admin</h1>
+                <h5 class="modal-title fs-5" id="modalSaldoLabel">Ubah Saldo Awal</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <?= form_open('admin/edit', ['class' => 'formAdmin']); ?>
+            <?= form_open('admin/ubahsaldo', ['class' => 'formUbahSaldo']); ?>
             <div class="modal-body">
+                <div class="alert alert-secondary text-sm" role="alert">
+                    Secara default, saldo awal adalah Rp 0.00,-. Silahkan ubah saldo awal kas desa melalui form input
+                    ini!
+                </div>
                 <?= csrf_field(); ?>
                 <div class="form-group mb-3">
-                    <label for="username" class="form-label">Username</label>
-                    <input type="text" class="form-control" name="username" id="username"
-                        value="<?= esc($admin['username']); ?>">
-                    <div class="invalid-feedback errorUsername"></div>
-                </div>
-                <div class="form-group mb-3">
-                    <label for="namaLengkap" class="form-label">Nama Lengkap</label>
-                    <input type="text" class="form-control" name="namaLengkap" id="namaLengkap"
-                        value="<?= esc($admin['namalengkap']); ?>" placeholder="(opsional)">
-                    <div class="invalid-feedback errorNamaLengkap"></div>
-                </div>
-                <div class="form-group mb-3">
-                    <label for="email" class="form-label">Email Address</label>
-                    <input type="email" class="form-control" name="email" id="email"
-                        value="<?= esc($admin['email']); ?>" placeholder="(opsional)">
-                    <div class="invalid-feedback errorEmail"></div>
+                    <label for="initSaldo" class="form-label">Saldo Awal</label>
+                    <div class="input-group">
+                        <span class="input-group-text">Rp</span>
+                        <input type="number" class="form-control" name="initSaldo" id="initSaldo" placeholder="min. 0"
+                            value="<?= esc($saldo); ?>">
+                        <span class="input-group-text">,00</span>
+                        <div class="invalid-feedback errorInitSaldo"></div>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="submit" class="btn btn-primary btnSimpan">Update Data</button>
+                <button type="submit" class="btn btn-primary btnSimpan">Ubah</button>
             </div>
             <?= form_close(); ?>
         </div>
     </div>
 </div>
 <script>
-    // Konfigurasi Modal Edit Profil di modaledit.php
+    // Konfigurasi Modal Ubah Saldo Awal di modalsaldo.php
     $(document).ready(function () {
-        $('.formAdmin').submit(function (e) {
+        $('.formUbahSaldo').submit(function (e) {
             e.preventDefault();
             $.ajax({
                 type: "POST",
@@ -52,12 +48,20 @@
                 },
                 complete: function () {
                     $('.btnSimpan').removeAttr('disable');
-                    $('.btnSimpan').html('Update Data')
+                    $('.btnSimpan').html('Ubah')
                 },
                 success: function (response) {
-                    if (response.errorUsername) {
-                        $('#username').addClass('is-invalid');
-                        $('.errorUsername').html(response.errorUsername);
+                    if (response.error) {
+
+                        if (response.error.initSaldo) {
+                            $('#initSaldo').addClass('is-invalid');
+                            $('.errorInitSaldo').html(response.error.initSaldo);
+                        } else {
+                            $('#initSaldo').removeClass('is-invalid');
+                            $('#initSaldo').addClass('is-valid');
+                            $('.errorInitSaldo').html('');
+                        }
+
                     } else {
                         Swal.fire({
                             icon: 'success',
@@ -68,8 +72,8 @@
                                 location.reload();
                             }
                         });
-                        $('#modalEditProfil').modal('hide');
-                        // location.reload();
+                        $('#modalSaldo').modal('hide');
+                        // tableBarang();
                     }
                 },
                 error: function (xhr, ajaxOptions, thrownError) {

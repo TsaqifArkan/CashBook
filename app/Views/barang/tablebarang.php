@@ -6,6 +6,7 @@
                 <th class="text-uppercase fw-bold">Nama Barang</th>
                 <th class="text-uppercase fw-bold">Stok Sekarang</th>
                 <th class="text-uppercase fw-bold">Satuan</th>
+                <th class="text-uppercase fw-bold">Harga Satuan</th>
                 <th class="text-uppercase fw-bold head-aksi">Aksi</th>
             </tr>
         </thead>
@@ -16,6 +17,7 @@
                     <td><?= esc($data['nama']); ?></td>
                     <td><?= esc($data['stok']); ?></td>
                     <td><?= esc($data['namaSatuan']); ?></td>
+                    <td><?= esc($data['hpp']); ?></td>
                     <td>
                         <a href="<?= base_url('barang/detail') . '/' . esc($data['idbrg']); ?>" class="btn btn-info btn-sm"
                             data-bs-toggle="tooltip" data-bs-placement="bottom" title="Detail"><i

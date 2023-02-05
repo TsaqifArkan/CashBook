@@ -53,10 +53,9 @@
                                             <hr>
                                             <div class="row">
                                                 <div class="col text-center">
-                                                    <button type="button" class="btn btn-warning" onclick="ubah()">Edit
-                                                        Profil</button>
-                                                    <button type="button" class="btn btn-secondary"
-                                                        onclick="password()">Ubah Password</button>
+                                                    <button type="button" class="btn btn-warning" onclick="ubah()">Edit Profil</button>
+                                                    <button type="button" class="btn btn-secondary" onclick="password()">Ubah Password</button>
+                                                    <button type="button" class="btn btn-info" onclick="ubahSaldoAwal()">Ubah Saldo Awal</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -103,6 +102,27 @@
                 if (response.data) {
                     $('.viewModalAdmin').html(response.data).show();
                     $('#modalUbahPass').modal('show');
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                // alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
+                var tab = window.open('about:blank', '_blank');
+                tab.document.write(xhr.responseText); // where 'html' is a variable containing your HTML
+                tab.document.close(); // to finish loading the page
+            }
+        });
+    }
+
+    // Konfigurasi Ubah Saldo Awal
+    function ubahSaldoAwal(){
+        $.ajax({
+            type: "POST",
+            url: "<?= base_url('admin/formsalaw'); ?>",
+            dataType: "JSON",
+            success: function (response) {
+                if (response.data) {
+                    $('.viewModalAdmin').html(response.data).show();
+                    $('#modalSaldo').modal('show');
                 }
             },
             error: function (xhr, ajaxOptions, thrownError) {

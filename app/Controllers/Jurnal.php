@@ -25,146 +25,41 @@ class Jurnal extends BaseController
     public function index()
     {
         $data['title'] = 'Jurnal';
-
-        $data['now'] = date('Y-m');
-        // $coba = $this->db->query('SELECT * FROM bukukas')->getResultArray();
-        // $dataBK = $this->bukukasModel->builder()->
-        // dd($coba);
-        // if (isset($coba)) {
-        // $data['initSaldo'] = 0;
-        // } else {
-
-        // }
-        // $stillNew = isset($coba);
-        // $data['initSaldo'] = 0;
-        // $thisyear = $this->yearnow == date('Y');
-        // $data['datemin'] = $this->yearnow . '-01';
-        // $data['datemax'] = $thisyear ? date('Y-m') : $this->yearnow . '-12';
-        // $data['now'] = $thisyear ? date('Y-m') : $data['datemax'];
-
-        // $data['datemin'] = $this->yearnow . '-01-01';
-        // $data['datemax'] = $thisyear ? date('Y-m-d') : $this->yearnow . '-12-31';
-        // $data['now'] = $thisyear ? date('Y-m-d') : $data['datemax'];
-        // $data['data'] = $thisyear ? $this->jurnalModel->getJurnal(date('Y-m-d'), date('Y-m-d')) : $this->jurnalModel->getJurnal($data['datemax'], $data['datemax']);
-        // $data['dateawal'] = date_format(date_create("2000-01-01"), 'Y-m-d');
-
+        // $data['now'] = date('Y-m') . '-01';
+        $data['now'] = date('Y-m-d');
+        $dataJurnal = $this->jurnalModel->getJurnal($data['now'], $data['now']);
+        $data['data'] = $dataJurnal;
         return view('jurnal/index', $data);
-    }
-
-    public function initSaldo()
-    {
-        if ($this->request->isAJAX()) {
-            $initSaldo = $this->request->getPost('initSaldo');
-            $valid = $this->validate([
-                'initSaldo' => [
-                    'label' => 'Saldo Awal',
-                    'rules' => 'required',
-                    'errors' => [
-                        'required' => '{field} tidak boleh kosong!'
-                    ]
-                ]
-            ]);
-            if (!$valid) {
-                $msg = [
-                    'error' => [
-                        'initSaldo' => $this->validation->getError('initSaldo')
-                    ]
-                ];
-            } else {
-                $inputData = [
-                    'nama' => $this->request->getPost('nama'),
-                    'stokawal' => $this->request->getPost('stokAwal'),
-                    'fk_idsatuan' => $this->request->getPost('satuan')
-                ];
-                $this->barangModel->insert($inputData);
-                $msg['flashData'] = 'Saldo awal berhasil disimpan.';
-            }
-            echo json_encode($msg);
-        }
     }
 
     public function getData()
     {
         if ($this->request->isAJAX()) {
-            // Before implement DateRange
-            // $query = $this->jurnalModel->findAll();
-            // foreach ($query as $i => $q) {
-            //     $query2 = $this->barangModel->builder()->select('nama, fk_idsatuan')->where('idbrg', $q['fk_idbrg'])->get()->getResultArray()[0];
-            //     $query3 = $this->satuanModel->builder()->select('nama')->where('idsatuan', $query2['fk_idsatuan'])->get()->getResultArray()[0];
-            //     $query[$i]['namaBrg'] = $query2['nama'];
-            //     $query[$i]['namaSat'] = $query3['nama'];
-            // }
-            // $data['data'] = $query;
-            // UNTIL THIS LINE
-
             // Try to implement DateRange
-            $bulan = $this->request->getPost('bulan');
-            $bulan = $bulan . '-' . date('d');
-            // $bulan = '2023-01-01';
-            // dd($bulan);
-            // $bulan = "2023-01-01";
-            // dd($bulan);
-            // $awal = $this->request->getPost('awal');
-            // $akhir = $this->request->getPost('akhir');
-
-            // Update the table on 02/02/2023
-            // Changelog : add total on Jurnal table
-            // $data['data'] = $this->jurnalModel->getJurnal($bulan);
-            $dataJurnal = $this->jurnalModel->getJurnal($bulan);
-            $total = 0;
-            foreach ($dataJurnal as $i => $d) {
-                $total = $d['jumlah'] * $d['harga'];
-                $dataJurnal[$i]['total'] = $total;
-            }
+            $awal = $this->request->getPost('awal');
+            $akhir = $this->request->getPost('akhir');
+            $dataJurnal = $this->jurnalModel->getJurnal($awal, $akhir);
             $data['data'] = $dataJurnal;
-            // dd($data['data']);
-
-            // Configure Rowspan 
-            $data['cRow'] = $this->jurnalModel->builder()->selectCount('created_at', 'countRow')->groupBy('created_at')->get()->getResultArray();
-            // dd($data['cRow']);
-            // Configure Rowspan by NoTrans
-            $data['nRow'] = $this->jurnalModel->builder()->selectCount('notrans', 'noRow')->groupBy('notrans')->get()->getResultArray();
-            // dd($data);
             $msg['data'] = view('jurnal/tablejurnal', $data);
             echo json_encode($msg);
         }
     }
 
-    // public function search()
-    // {
-    //     if ($this->request->isAJAX()) {
-    //         $output = '';
-    //         $keyword = '';
-    //         $keyword = $this->request->getPost('query');
-    //         $data = $this->jurnalModel->search_jurnal($keyword);
-    //         if (count($data) > 0){
-    //             foreach($data as $i => $d){
-    //                 '<tr>
-    //                     <td>'.$i++.'</td>
-    //                     <td>'.$d['tanggal'].'</td>
-    //                     <td>'.$d['keterangan'].'</td>
-    //                     <td>'.$d[''].'</td>
-    //                     '
-    //             }
-    //         }
-    //     }
-    // }
-
-    public function transaksi()
+    public function jualBeli()
     {
-        $data['title'] = 'Transaksi Jual/Beli';
+        $data['title'] = 'Transaksi Jual Beli';
         // $data['validation'] = $this->validation;
         // Get data Barang from DB
-        $dataBrg = $this->barangModel->builder()->select('idbrg, nama, stok, fk_idsatuan')->get()->getResultArray();
+        $dataBrg = $this->barangModel->builder()->select('idbrg, nama, stok, hpp, fk_idsatuan')->get()->getResultArray();
         foreach ($dataBrg as $i => $b) {
             $dataSat = $this->satuanModel->builder()->select('nama')->where('idsatuan', $b['fk_idsatuan'])->get()->getResultArray()[0];
             $dataBrg[$i]['namaSat'] = $dataSat['nama'];
         }
         $data['barang'] = $dataBrg;
-        return view('jurnal/transaksi', $data);
+        return view('jurnal/jualbeli', $data);
     }
 
-    public function other()
+    public function lainnya()
     {
         $data['title'] = 'Transaksi Lainnya';
         // $data['validation'] = $this->validation;
@@ -246,9 +141,10 @@ class Jurnal extends BaseController
             ],
             'jumlah' => [
                 'label' => 'Barang',
-                'rules' => 'required_without[mutasi]|greater_than[0]' . $ruleJml,
+                'rules' => 'required_without[mutasi]|numeric|greater_than[0]' . $ruleJml,
                 'errors' => [
                     'required_without' => 'Pilih salah satu Jenis Transaksi terlebih dahulu!',
+                    'numeric' => 'Jumlah {field} hanya dapat berisi angka!',
                     'greater_than' => '{field} tidak boleh berjumlah 0!',
                     'less_than_equal_to' => 'Jumlah {field} tidak boleh melebihi stok! (Stok = ' . $stokBrg . ')'
                 ]

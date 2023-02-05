@@ -10,7 +10,7 @@ class AdminModel extends Model
     protected $primaryKey = 'idadmin';
     protected $returnType = 'array';
     protected $useSoftDeletes = false;
-    protected $allowedFields = ['username', 'password', 'namalengkap', 'email', 'session_key'];
+    protected $allowedFields = ['username', 'password', 'namalengkap', 'email', 'saldoawal', 'session_key'];
     protected $useTimestamps = true;
     protected $dateFormat = 'date';
     protected $createdField = '';

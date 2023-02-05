@@ -1,6 +1,6 @@
 <!-- Modal -->
 <div class="modal fade" id="modalUbahPass" tabindex="-1" aria-labelledby="judulModalPass" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
                 <h1 class="modal-title fs-5" id="judulModalPass">Ubah Password</h1>
