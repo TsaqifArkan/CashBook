@@ -107,7 +107,7 @@
                             </div>
                             <div class="col-3">
                                 <div class="form-group mb-3">
-                                    <label for="harga" class="form-label">Harga</label>
+                                    <label for="harga" class="form-label">Harga Satuan</label>
                                     <div class="input-group">
                                         <span class="input-group-text">Rp</span>
                                         <input type="number" class="form-control" name="harga" id="harga">

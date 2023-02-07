@@ -14,7 +14,7 @@
     <div class="container-fluid px-4">
         <div class="d-flex align-items-center justify-content-center small">
             <div class="text-muted">Copyright &copy; <?= date('Y'); ?>, made with <i class="fa-solid fa-heart"></i> by
-                <b>Tsaqif Muhammad Arkan</b>.
+                <b>Tsaqif Muhammad Arkan</b> - <b>KKN TIM 1 UNDIP 2022/2023 SEMARANG</b>
             </div>
         </div>
     </div>

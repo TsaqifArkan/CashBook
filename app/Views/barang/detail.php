@@ -26,16 +26,16 @@
                 <div class="card-header py-2">
                     <h6 class="m-1 fw-bold text-uppercase">Kartu Inventaris Barang</h6>
                 </div>
-                <div class="card-body">
+                <div class="card-body p-4">
                     <div class="table-responsive">
                         <div class="row mb-2 mx-0">
                             <div class="col mx-0">
-                                <h4 class="text-dark"><strong><?= $namaBarang; ?></strong></h4>
+                                <h4 class="text-dark"><strong><?= $namaBarang; ?> (<?= $namaSat; ?>)</strong></h4>
                             </div>
                         </div>
                         <table class="table table-bordered table-hover" id="dataTable-Detail">
                             <thead class="ave-bg-th">
-                                <tr>
+                                <tr class="text-center">
                                     <th class="text-uppercase fw-bold head-no">No</th>
                                     <th class="text-uppercase fw-bold">Tanggal</th>
                                     <th class="text-uppercase fw-bold">Keterangan</th>
@@ -53,24 +53,25 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>0</td>
-                                    <td></td>
+                                    <td class="text-center">0</td>
+                                    <td class="text-center"></td>
                                     <td>Stok Awal</td>
-                                    <td></td>
-                                    <td></td>
-                                    <td><?= esc($stokawalBrg); ?></td>
-                                    <td><?= esc($hppBrg); ?></td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"><?= esc($stokawalBrg); ?></td>
+                                    <td class="text-center"><?= esc($hppBrg); ?></td>
                                 </tr>
                                 <?php foreach ($data as $i => $d): ?>
                                     <tr>
-                                        <td><?= $i + 1; ?></td>
-                                        <td><?= esc($d['tanggal']); ?></td>
+                                        <td class="text-center"><?= $i + 1; ?></td>
+                                        <td class="text-center"><?= esc($d['tanggal']); ?></td>
                                         <td><?= esc($d['keterangan']); ?></td>
                                         <!-- <td><?php // echo esc($d['namaBrg']); ?></td> -->
-                                        <td><?=(esc($d['dk']) == 'D' ? 'Pemasukan' : 'Pengeluaran'); ?></td>
-                                        <td><?= esc($d['jumlah']); ?></td>
-                                        <td><?= esc($d['stokNow']); ?></td>
-                                        <td><?= esc($d['harga']); ?></td>
+                                        <td class="text-center"><?=(esc($d['dk']) == 'D' ? 'Pemasukan' : 'Pengeluaran'); ?>
+                                        </td>
+                                        <td class="text-center"><?= esc($d['jumlah']); ?></td>
+                                        <td class="text-center"><?= esc($d['stokNow']); ?></td>
+                                        <td class="text-center"><?= esc($d['harga']); ?></td>
                                         <!-- <td><?php // echo esc($d['satBrg']); ?></td> -->
                                         <!-- <td><?php // echo esc($d['pemasukan']); ?></td> -->
                                         <!-- <td><?php // echo esc($d['pengeluaran']); ?></td> -->

@@ -48,7 +48,6 @@ class Jurnal extends BaseController
     public function jualBeli()
     {
         $data['title'] = 'Transaksi Jual Beli';
-        // $data['validation'] = $this->validation;
         // Get data Barang from DB
         $dataBrg = $this->barangModel->builder()->select('idbrg, nama, stok, hpp, fk_idsatuan')->get()->getResultArray();
         foreach ($dataBrg as $i => $b) {
@@ -57,20 +56,6 @@ class Jurnal extends BaseController
         }
         $data['barang'] = $dataBrg;
         return view('jurnal/jualbeli', $data);
-    }
-
-    public function lainnya()
-    {
-        $data['title'] = 'Transaksi Lainnya';
-        // $data['validation'] = $this->validation;
-        // Get data Barang from DB
-        $dataBrg = $this->barangModel->builder()->select('idbrg, nama, stok, fk_idsatuan')->get()->getResultArray();
-        foreach ($dataBrg as $i => $b) {
-            $dataSat = $this->satuanModel->builder()->select('nama')->where('idsatuan', $b['fk_idsatuan'])->get()->getResultArray()[0];
-            $dataBrg[$i]['namaSat'] = $dataSat['nama'];
-        }
-        $data['barang'] = $dataBrg;
-        return view('jurnal/transaksi', $data);
     }
 
     public function validatef1()
@@ -196,15 +181,16 @@ class Jurnal extends BaseController
         // Array for viewing data in main table - DEPRC since now redirect
         // $kodeArr = [];
         // $akunArr = [];
+
         // Preparing Array to insert into DB
-        // Check whether there's a data in Jurnal Table
-        $maxNum = $this->jurnalModel->builder()->selectMax('notrans', 'maxNo')->get()->getResultArray()[0]['maxNo'];
+        // Check whether there's a data in Jurnal Table - Deprec since 06/02/2023 12.30
+        // $maxNum = $this->jurnalModel->builder()->selectMax('notrans', 'maxNo')->get()->getResultArray()[0]['maxNo'];
         // $numData = $this->jurnalModel->builder()->selectCount("idjurnal", 'jmlDat')->get()->getResultArray()[0]['jmlDat'];
-        if ($maxNum == '' || $maxNum == null || !isset($maxNum)) {
-            $noTrans = 1;
-        } else {
-            $noTrans = $maxNum + 1;
-        }
+        // if ($maxNum == '' || $maxNum == null || !isset($maxNum)) {
+        //     $noTrans = 1;
+        // } else {
+        //     $noTrans = $maxNum + 1;
+        // }
         $insertData = [];
         foreach ($arrayPost as $d) {
             $idBrg = $d['barang'];
@@ -219,7 +205,7 @@ class Jurnal extends BaseController
                 'dk' => $d['mutasi'],
                 'jumlah' => $d['jumlah'],
                 'harga' => $d['harga'],
-                'notrans' => $noTrans,
+                // 'notrans' => $noTrans,
                 'fk_idbrg' => $d['barang']
             ];
             array_push($insertData, $arr);
@@ -242,22 +228,86 @@ class Jurnal extends BaseController
         return redirect()->to(base_url('jurnal'));
     }
 
-    public function edit($notra = 0)
+    public function formAddOther()
     {
-        $data['title'] = 'Edit Transaksi';
-        $query = $this->jurnalModel->builder()->select('*')->where('notrans', $notra)->get()->getResultArray();
-
-        foreach ($query as $i => $q) {
-            $idbrg = $q['fk_idbrg'];
-            // Get data Barang from DB
-            $dataBrg = $this->barangModel->builder()->select('nama, fk_idsatuan')->where('idbrg', $idbrg)->get()->getResultArray()[0];
-            $dataSat = $this->satuanModel->builder()->select('nama')->where('idsatuan', $dataBrg['fk_idsatuan'])->get()->getResultArray()[0];
-            $query[$i]['namaBar'] = $dataBrg['nama'];
-            $query[$i]['namaSat'] = $dataSat['nama'];
+        if ($this->request->isAJAX()) {
+            $msg['data'] = view('jurnal/modaladdother');
+            echo json_encode($msg);
         }
-        $data['data'] = $query;
-        return view('jurnal/indexedit', $data);
     }
+
+    public function addOther()
+    {
+        if ($this->request->isAJAX()) {
+            $valid = $this->validate([
+                'tanggal' => [
+                    'label' => 'Tanggal',
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => '{field} tidak boleh kosong!'
+                    ]
+                ],
+                'keterangan' => [
+                    'label' => 'Keterangan',
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => '{field} tidak boleh kosong!'
+                    ]
+                ],
+                'mutasi' => [
+                    'label' => 'Jenis Transaksi',
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => 'Pilih salah satu {field}!'
+                    ]
+                ],
+                'harga' => [
+                    'label' => 'Harga',
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => '{field} tidak boleh kosong!'
+                    ]
+                ]
+            ]);
+            if (!$valid) {
+                $msg = [
+                    'error' => [
+                        'tanggal' => $this->validation->getError('tanggal'),
+                        'keterangan' => $this->validation->getError('keterangan'),
+                        'mutasi' => $this->validation->getError('mutasi'),
+                        'harga' => $this->validation->getError('harga')
+                    ]
+                ];
+            } else {
+                $inputData = [
+                    'tanggal' => $this->request->getPost('tanggal'),
+                    'keterangan' => $this->request->getPost('keterangan'),
+                    'dk' => $this->request->getPost('mutasi'),
+                    'harga' => $this->request->getPost('harga')
+                ];
+                $this->jurnalModel->insert($inputData);
+                $msg['flashData'] = 'Data transaksi berhasil ditambah!';
+            }
+            echo json_encode($msg);
+        }
+    }
+
+    // public function edit($notra = 0)
+    // {
+    //     $data['title'] = 'Edit Transaksi';
+    //     $query = $this->jurnalModel->builder()->select('*')->where('notrans', $notra)->get()->getResultArray();
+
+    //     foreach ($query as $i => $q) {
+    //         $idbrg = $q['fk_idbrg'];
+    //         // Get data Barang from DB
+    //         $dataBrg = $this->barangModel->builder()->select('nama, fk_idsatuan')->where('idbrg', $idbrg)->get()->getResultArray()[0];
+    //         $dataSat = $this->satuanModel->builder()->select('nama')->where('idsatuan', $dataBrg['fk_idsatuan'])->get()->getResultArray()[0];
+    //         $query[$i]['namaBar'] = $dataBrg['nama'];
+    //         $query[$i]['namaSat'] = $dataSat['nama'];
+    //     }
+    //     $data['data'] = $query;
+    //     return view('jurnal/indexedit', $data);
+    // }
 
     public function formEdit()
     {
@@ -266,22 +316,25 @@ class Jurnal extends BaseController
             $id = $this->request->getPost('id');
             // Get Data Jurnal from DB
             $data['trans'] = $this->jurnalModel->find($id);
-            // Get Data Barang from DB
-            $dataBar = $this->barangModel->findAll();
-            foreach ($dataBar as $i => $d) {
-                $idsat = $d['fk_idsatuan'];
-                $dataSat = $this->satuanModel->builder()->select('nama')->where('idsatuan', $idsat)->get()->getResultArray()[0]['nama'];
-                $dataBar[$i]['allNamaSat'] = $dataSat;
-            }
-            $data['barang'] = $dataBar;
-            $data['satuan'] = $this->satuanModel->findAll();
+            // Check whether fk_idbrg is empty or not
             // Data Transaksi selected one barang
             $data['idBar'] = $data['trans']['fk_idbrg'];
-            // Get 1 data only
-            $data['oneData'] = $this->barangModel->find($data['idBar']);
-            $data['stok'] = $data['oneData']['stok'];
-            $data['namaSat'] = $this->satuanModel->builder()->select('nama')->where('idsatuan', $data['oneData']['fk_idsatuan'])->get()->getResultArray()[0]['nama'];
-            // dd($data);
+            // dd($data['idBar']);
+            if (!is_null($data['idBar'])) {
+                // Get Data Barang from DB
+                $dataBar = $this->barangModel->findAll();
+                foreach ($dataBar as $i => $d) {
+                    $idsat = $d['fk_idsatuan'];
+                    $dataSat = $this->satuanModel->builder()->select('nama')->where('idsatuan', $idsat)->get()->getResultArray()[0]['nama'];
+                    $dataBar[$i]['allNamaSat'] = $dataSat;
+                }
+                $data['barang'] = $dataBar;
+                $data['satuan'] = $this->satuanModel->findAll();
+                // Get 1 data only
+                $data['oneData'] = $this->barangModel->find($data['idBar']);
+                $data['stok'] = $data['oneData']['stok'];
+                $data['namaSat'] = $this->satuanModel->builder()->select('nama')->where('idsatuan', $data['oneData']['fk_idsatuan'])->get()->getResultArray()[0]['nama'];
+            }
             $msg['data'] = view('jurnal/modaledit', $data);
             echo json_encode($msg);
         }
@@ -290,7 +343,6 @@ class Jurnal extends BaseController
     public function saveEdit()
     {
         if ($this->request->isAJAX()) {
-            // dd($_POST);
             // Fetch POST Data
             $idJurnalPost = $this->request->getPost('idjurnal');
             $tglPost = $this->request->getPost('tanggal');
@@ -301,40 +353,51 @@ class Jurnal extends BaseController
             $hargaPost = $this->request->getPost('harga');
             $ketPost = $this->request->getPost('keterangan');
 
-            // Get Mutasi and Jumlah Before Update
-            $dataDB = $this->jurnalModel->builder()->select('dk, jumlah')->where('idjurnal', $idJurnalPost)->get()->getResultArray()[0];
-            $mutDB = $dataDB['dk'];
-            $jmlDB = $dataDB['jumlah'];
+            if (!is_null($idbrgPost)) {
+                // Get Mutasi and Jumlah Before Update
+                $dataDB = $this->jurnalModel->builder()->select('dk, jumlah')->where('idjurnal', $idJurnalPost)->get()->getResultArray()[0];
+                $mutDB = $dataDB['dk'];
+                $jmlDB = $dataDB['jumlah'];
 
-            // Configure Stok Barang
-            // Misal mutDB = D, mutPost = K, jmlDB = 8, jmlPost = 10
-            // ex2 : mutDB = K, mutPost = K, jmlDB = 8, jmlPost = 5
-            $ruleJml = '';
-            if ($mutDB != $mutPost || $jmlDB != $jmlPost) {
-                // $stokBrg = $stokPost + $jmlPost * (($mutPost == 'D') ? 1 : -1);
-                if ($mutDB != $mutPost) {
-                    if ($mutPost == 'D') {
-                        $stokBrg = $stokPost - $jmlDB;
-                        $ruleJml .= "|less_than_equal_to[$stokBrg]";
-                        $stokNow = $stokPost - $jmlDB - $jmlPost;
-                    } else { // Mutasi = 'K'
-                        $stokBrg = 0;
-                        $stokNow = $stokPost + $jmlDB + $jmlPost;
+                // Configure Stok Barang
+                // Misal mutDB = D, mutPost = K, jmlDB = 8, jmlPost = 10
+                // ex2 : mutDB = K, mutPost = K, jmlDB = 8, jmlPost = 5
+                // $ruleJml = '';
+                if ($mutDB != $mutPost || $jmlDB != $jmlPost) {
+                    // $stokBrg = $stokPost + $jmlPost * (($mutPost == 'D') ? 1 : -1);
+                    if ($mutDB != $mutPost) {
+                        if ($mutPost == 'D') {
+                            $stokBrg = $stokPost - $jmlDB;
+                            $ruleJml = "required|greater_than[0]|numeric|less_than_equal_to[$stokBrg]";
+                            $stokNow = $stokPost - $jmlDB - $jmlPost;
+                        } else { // Mutasi = 'K'
+                            $stokBrg = 0;
+                            $stokNow = $stokPost + $jmlDB + $jmlPost;
+                        }
+                    } else { // $jmlDB != $jmlPost
+                        if ($mutPost == 'D') {
+                            $stokBrg = $stokPost + $jmlDB;
+                            $ruleJml = "required|greater_than[0]|numeric|less_than_equal_to[$stokBrg]";
+                            $stokNow = $stokPost + $jmlDB - $jmlPost;
+                        } else { // Mutasi = 'K'
+                            $stokBrg = 0;
+                            $stokNow = $stokPost - $jmlDB + $jmlPost;
+                        }
                     }
-                } else { // $jmlDB != $jmlPost
-                    if ($mutPost == 'D') {
-                        $stokBrg = $stokPost + $jmlDB;
-                        $ruleJml .= "|less_than_equal_to[$stokBrg]";
-                        $stokNow = $stokPost + $jmlDB - $jmlPost;
-                    } else { // Mutasi = 'K'
-                        $stokBrg = 0;
-                        $stokNow = $stokPost - $jmlDB + $jmlPost;
-                    }
+                } else {
+                    $ruleJml = 'permit_empty';
+                    $stokNow = $stokPost;
+                    $stokBrg = $stokPost;
                 }
+                $ruleBrg = 'required';
+                $ruleKet = 'permit_empty';
             } else {
-                $stokNow = $stokPost;
-                $stokBrg = $stokPost;
+                $ruleBrg = 'permit_empty';
+                $ruleKet = 'required';
+                $ruleJml = 'permit_empty';
+                $stokBrg = 0;
             }
+
             // dd($stokBrg, $stokNow);
             $valid = $this->validate([
                 'tanggal' => [
@@ -347,27 +410,31 @@ class Jurnal extends BaseController
                 'barang' => [
                     'label' => 'Barang',
                     // 'rules' => 'required_without[keterangan]',
-                    'rules' => 'required',
+                    'rules' => $ruleBrg,
                     'errors' => [
                         // 'required_without' => 'Pilih salah satu {field} atau isi Keterangan!'
-                        'required_without' => 'Pilih salah satu {field}!'
+                        'required' => 'Pilih salah satu {field}!',
+                        'permit_empty' => '{field} opsional'
                     ]
                 ],
                 'jumlah' => [
                     'label' => 'Barang',
-                    'rules' => 'greater_than[0]|required_with[keterangan]' . $ruleJml,
+                    'rules' => $ruleJml,
                     'errors' => [
                         'greater_than' => '{field} tidak boleh berjumlah 0!',
-                        'less_than_equal_to' => 'Jumlah {field} tidak boleh melebihi stok! (Stok = ' . $stokBrg . ')'
+                        'numeric' => 'Jumlah {field} hanya dapat berisi angka!',
+                        'less_than_equal_to' => 'Jumlah {field} tidak boleh melebihi stok! (Stok = ' . $stokBrg . ')',
+                        'permit_empty' => '{field} opsional'
                     ]
                 ],
-                // 'keterangan' => [
-                //     'label' => 'Keterangan',
-                //     'rules' => 'required_without[barang]',
-                //     'errors' => [
-                //         'required_without' => 'Isi {field} atau pilih salah satu Barang!'
-                //     ]
-                // ],
+                'keterangan' => [
+                    'label' => 'Keterangan',
+                    'rules' => $ruleKet,
+                    'errors' => [
+                        'required' => '{field} tidak boleh kosong!',
+                        'permit_empty' => '{field} opsional'
+                    ]
+                ],
                 'mutasi' => [
                     'label' => 'Jenis Transaksi',
                     'rules' => 'required',
@@ -389,7 +456,7 @@ class Jurnal extends BaseController
                         'tanggal' => $this->validation->getError('tanggal'),
                         'barang' => $this->validation->getError('barang'),
                         'jumlah' => $this->validation->getError('jumlah'),
-                        // 'keterangan' => $this->validation->getError('keterangan'),
+                        'keterangan' => $this->validation->getError('keterangan'),
                         'mutasi' => $this->validation->getError('mutasi'),
                         'harga' => $this->validation->getError('harga')
                     ]
@@ -406,7 +473,9 @@ class Jurnal extends BaseController
                 ];
                 $this->jurnalModel->update($idJurnalPost, $updatedData);
                 // Update Stok Barang on DB
-                $this->barangModel->update($idbrgPost, ['stok' => $stokNow]);
+                if (!is_null($idbrgPost)) {
+                    $this->barangModel->update($idbrgPost, ['stok' => $stokNow]);
+                }
                 $msg['flashData'] = 'Data transaksi berhasil diupdate!';
             }
             echo json_encode($msg);
@@ -422,10 +491,12 @@ class Jurnal extends BaseController
             $mutJur = $dataDB['dk'];
             $jmlJur = $dataDB['jumlah'];
             $idBrg = $dataDB['fk_idbrg'];
-            $stokBrg = $this->barangModel->builder()->select('stok')->where('idbrg', $idBrg)->get()->getResultArray()[0]['stok'];
-            $stokNow = $stokBrg + ($jmlJur * ($mutJur == 'D' ? 1 : -1));
-            // Update data stok Barang di DB
-            $this->barangModel->update($idBrg, ['stok' => $stokNow]);
+            if (!is_null($idBrg)) {
+                $stokBrg = $this->barangModel->builder()->select('stok')->where('idbrg', $idBrg)->get()->getResultArray()[0]['stok'];
+                $stokNow = $stokBrg + ($jmlJur * ($mutJur == 'D' ? 1 : -1));
+                // Update data stok Barang di DB
+                $this->barangModel->update($idBrg, ['stok' => $stokNow]);
+            }
             // Delete 1 row data
             $this->jurnalModel->delete($idjur);
             $msg['flashData'] = 'Data transaksi berhasil dihapus.';

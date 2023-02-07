@@ -34,6 +34,7 @@ class Barang extends BaseController
                 $idSatuan = $data['fk_idsatuan'];
                 $namaSatuan = $this->satuanModel->builder()->select('nama')->where('idsatuan', $idSatuan)->get()->getResultArray()[0]['nama'];
                 $dataBrg[$i]['namaSatuan'] = $namaSatuan;
+                $dataBrg[$i]['hpp'] = numfmt_format($this->currencyfmt, $data['hpp']);
             }
             $data['datas'] = $dataBrg;
             $msg['data'] = view('barang/tablebarang', $data);
@@ -194,11 +195,13 @@ class Barang extends BaseController
     public function detail($id = 0)
     {
         $data['title'] = 'Detail Barang';
-        $dataBarang = $this->barangModel->builder()->select('nama, stokawal, hpp')->where('idbrg', $id)->get()->getResultArray()[0];
+        $dataBarang = $this->barangModel->builder()->select('nama, stokawal, hpp, fk_idsatuan')->where('idbrg', $id)->get()->getResultArray()[0];
+        // Get Each Data
         $data['namaBarang'] = $dataBarang['nama'];
         $stokAwal = $dataBarang['stokawal'];
         $data['stokawalBrg'] = $stokAwal;
-        $data['hppBrg'] = $dataBarang['hpp'];
+        $data['hppBrg'] = numfmt_format($this->currencyfmt, $dataBarang['hpp']);
+        $data['namaSat'] = $this->satuanModel->builder()->select('nama')->where('idsatuan', $dataBarang['fk_idsatuan'])->get()->getResultArray()[0]['nama'];
         $detail = $this->jurnalModel->builder()->select('*')->where('fk_idbrg', $id)->get()->getResultArray();
         $saldo = 0;
         foreach ($detail as $i => $d) {
@@ -215,6 +218,8 @@ class Barang extends BaseController
             $pengeluaran = ($d['dk'] == 'K') ? $total : '';
             $saldo += $total * ($d['dk'] == 'D' ? 1 : -1);
             // Forming Array
+            $detail[$i]['tanggal'] = date_format(date_create($d['tanggal']), 'd-M-Y');
+            $detail[$i]['harga'] = numfmt_format($this->currencyfmt, $d['harga']);
             $detail[$i]['stokNow'] = $stok;
             $detail[$i]['namaBrg'] = $query['nama'];
             $detail[$i]['satBrg'] = $query2['nama'];

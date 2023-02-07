@@ -21,6 +21,7 @@ class AuthFilter implements FilterInterface
                     'sesskey' => session('admin_session.sesskey')
                 ], 3600);
                 session()->set('ann', date('Y'));
+                session()->set('monyear', date('Y-m'));
                 return;
             }
         }

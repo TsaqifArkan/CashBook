@@ -16,57 +16,65 @@
                         value="<?= esc($trans['tanggal']); ?>">
                     <div class="invalid-feedback errorTanggal"></div>
                 </div>
-                <div class="form-group mb-3">
-                    <label for="barang" class="form-label">Pilih Barang</label>
-                    <select class="form-select" id="barang" name="barang">
-                        <!-- onchange="setSatStok()" -->
-                        <option value="" disabled <?=!isset($idBar) ? "selected" : ''; ?>>-- Pilih barang --
-                        </option>
-                        <?php foreach ($barang as $i => $b): ?>
-                            <option id="brg<?= esc($i++); ?>" value="<?= esc($b['idbrg']); ?>"
-                                data-satuan="<?= esc($b['allNamaSat']); ?>" data-stok="<?= esc($b['stok']); ?>"
-                                <?=(esc($b['idbrg']) == $idBar) ? "selected" : ''; ?>><?= esc($b['nama']); ?></option>
-                            <!-- onchange="$('#stok')[0].value = this.dataset['stok']" -->
-                        <?php endforeach; ?>
-                    </select>
-                    <div class="invalid-feedback errorBarang"></div>
-                </div>
-                <div class="form-group mb-3">
-                    <label for="stok" class="form-label">Stok saat ini</label>
-                    <input type="text" class="form-control" name="stok" id="stok" value="<?= esc($stok); ?>" readonly>
-                </div>
+                <?php if (!is_null($idBar)): ?>
+                    <div class="form-group mb-3">
+                        <label for="barang" class="form-label">Pilih Barang</label>
+                        <select class="form-select" id="barang" name="barang">
+                            <!-- onchange="setSatStok()" -->
+                            <option value="" disabled <?=!isset($idBar) ? "selected" : ''; ?>>-- Pilih barang --
+                            </option>
+                            <?php foreach ($barang as $i => $b): ?>
+                                <option id="brg<?= esc($i++); ?>" value="<?= esc($b['idbrg']); ?>"
+                                    data-satuan="<?= esc($b['allNamaSat']); ?>" data-stok="<?= esc($b['stok']); ?>"
+                                    <?=(esc($b['idbrg']) == $idBar) ? "selected" : ''; ?>><?= esc($b['nama']); ?></option>
+                                <!-- onchange="$('#stok')[0].value = this.dataset['stok']" -->
+                            <?php endforeach; ?>
+                        </select>
+                        <div class="invalid-feedback errorBarang"></div>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="stok" class="form-label">Stok saat ini</label>
+                        <input type="text" class="form-control" name="stok" id="stok" value="<?= esc($stok); ?>" readonly>
+                    </div>
+                <?php endif; ?>
                 <div class="form-group mb-3">
                     <label for="mutasi" class="form-label">Jenis Transaksi</label>
                     <div class="form-row justify-content-between text-center mt-1">
                         <div class="col">
                             <input class="form-check-input" type="radio" name="mutasi" id="debit" value="D"
-                                onchange="toggleJml();" data-mut="Pemasukan" <?= esc($trans['dk'] == 'D') ? "checked" : ''; ?>>
+                                data-mut="Pemasukan" <?= esc($trans['dk'] == 'D') ? "checked" : ''; ?>>
                             <label class="form-check-label" for="debit">
                                 Pemasukan</label>
-                            <div class="text-secondary text-sm">(penjualan barang / transaksi lainnya)</div>
+                            <?php if (!is_null($idBar)): ?>
+                                <div class="text-secondary text-sm">(penjualan barang)</div>
+                            <?php endif; ?>
                         </div>
                         <div class="col">
                             <input class="form-check-input" type="radio" name="mutasi" id="kredit" value="K"
-                                onchange="toggleJml();" data-mut="Pengeluaran" <?= esc($trans['dk'] == 'K') ? "checked" : ''; ?>>
+                                data-mut="Pengeluaran" <?= esc($trans['dk'] == 'K') ? "checked" : ''; ?>>
                             <label class="form-check-label" for="kredit">
                                 Pengeluaran</label>
-                            <div class="text-secondary text-sm">(pembelian barang / transaksi lainnya)</div>
+                            <?php if (!is_null($idBar)): ?>
+                                <div class="text-secondary text-sm">(pembelian barang)</div>
+                            <?php endif; ?>
                         </div>
                     </div>
                     <div class="text-danger errorMutasi" style="font-size: 83%;"></div>
                 </div>
-                <div class="form-group mb-3">
-                    <label for="jumlah" class="form-label">Jumlah</label>
-                    <input type="text" class="form-control" name="jumlah" id="jumlah"
-                        value="<?= esc($trans['jumlah']); ?>">
-                    <div class="invalid-feedback errorJumlah"></div>
-                </div>
-                <div class="form-group mb-3">
-                    <label for="satuan" class="form-label">Satuan</label>
-                    <input type="text" class="form-control" name="satuan" id="satuan" value="<?= esc($namaSat); ?>"
-                        disabled>
-                    <!-- <div class="invalid-feedback errorSatuan"></div> -->
-                </div>
+                <?php if (!is_null($idBar)): ?>
+                    <div class="form-group mb-3">
+                        <label for="jumlah" class="form-label">Jumlah</label>
+                        <input type="text" class="form-control" name="jumlah" id="jumlah"
+                            value="<?= esc($trans['jumlah']); ?>">
+                        <div class="invalid-feedback errorJumlah"></div>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="satuan" class="form-label">Satuan</label>
+                        <input type="text" class="form-control" name="satuan" id="satuan" value="<?= esc($namaSat); ?>"
+                            disabled>
+                        <!-- <div class="invalid-feedback errorSatuan"></div> -->
+                    </div>
+                <?php endif; ?>
                 <div class="form-group mb-3">
                     <label for="harga" class="form-label">Harga</label>
                     <div class="input-group">
@@ -138,14 +146,14 @@
                             $('#jumlah').addClass('is-valid');
                             $('.errorJumlah').html('');
                         }
-                        // if (response.error.keterangan) {
-                        //     $('#keterangan').addClass('is-invalid');
-                        //     $('.errorKeterangan').html(response.error.keterangan);
-                        // } else {
-                        //     $('#keterangan').removeClass('is-invalid');
-                        //     $('#keterangan').addClass('is-valid');
-                        //     $('.errorKeterangan').html('');
-                        // }
+                        if (response.error.keterangan) {
+                            $('#keterangan').addClass('is-invalid');
+                            $('.errorKeterangan').html(response.error.keterangan);
+                        } else {
+                            $('#keterangan').removeClass('is-invalid');
+                            $('#keterangan').addClass('is-valid');
+                            $('.errorKeterangan').html('');
+                        }
                         if (response.error.mutasi) {
                             $('.errorMutasi').html(response.error.mutasi);
                         } else {

@@ -20,8 +20,7 @@
                                         <!-- <div class="usr-display-picture">
                                         <img src="" alt="" class="img-thumbnail">
                                     </div> -->
-                                        <div class="usr-banner"><img src="<?= base_url('img/dateahlive_20210203_2.png'); ?>" 
-                                                alt="">
+                                        <div class="usr-banner"><img src="<?= base_url('img/curved4.jpg'); ?>" alt="">
                                         </div>
                                         <div class="usr-content">
                                             <div class="row" style="font-size: large;">

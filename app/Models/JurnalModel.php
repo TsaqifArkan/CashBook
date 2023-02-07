@@ -48,7 +48,8 @@ class JurnalModel extends Model
         $q = $db->query("CALL get_jurnal(DATE('$awal'), DATE('$akhir'))");
         $res = $q->getResultArray();
         foreach ($res as $i => $d) {
-            $total = $d['jumlah'] * $d['harga'];
+            $jumlah = (is_null($d['fk_idbrg'])) ? 1 : $d['jumlah'];
+            $total = $jumlah * $d['harga'];
             $res[$i]['tanggal'] = date_format(date_create($d['tanggal']), "d-M-Y");
             $res[$i]['total'] = numfmt_format($currencyfmt, $total);
             $res[$i]['harga'] = numfmt_format($currencyfmt, $d['harga']);
@@ -59,15 +60,19 @@ class JurnalModel extends Model
     public function getBukuKas($id = 0, $awal, $akhir)
     {
         $adminModel = new AdminModel();
+        $brgModel = new BarangModel();
         $currencyfmt = numfmt_create('ID_id', NumberFormatter::CURRENCY);
 
         // Initial Step
         $saldo = $adminModel->builder()->select('saldoawal')->where('idadmin', $id)->get()->getResultArray()[0]['saldoawal'];
         // Hanya untuk menghitung Saldo Sebelumnya saja! | First Step
-        $query = $this->builder()->select('dk, jumlah, harga')->where('tanggal <', $awal)->get()->getResultArray();
+        $query = $this->builder()->select('dk, jumlah, harga, fk_idbrg')->where('tanggal <', $awal)->get()->getResultArray();
         foreach ($query as $i => $q) {
-            $total = $q['jumlah'] * $q['harga'] * (($q['dk'] == 'D') ? 1 : -1);
-            $saldoNow = $saldo + $total;
+            $jumlah = (is_null($q['fk_idbrg'])) ? 1 : $q['jumlah'];
+            // $total = $jumlah * $q['harga'] * (($q['dk'] == 'D') ? 1 : -1);
+            $total = $jumlah * $q['harga'];
+            // $saldoNow = $saldo + $total;
+            $saldoNow = (($q['dk'] == 'D') ? ($saldo + $total) : ($saldo - $total));
             $saldo = $saldoNow;
             $query[$i]['total1'] = $total;
             $query[$i]['saldo1'] = $saldoNow;
@@ -75,17 +80,39 @@ class JurnalModel extends Model
         $res['saldoA'] = numfmt_format($currencyfmt, $saldo);
 
         // Saldo Date Range | Second Step
-        $query2 = $this->builder()->select('tanggal, keterangan, dk, jumlah, harga')->where("tanggal BETWEEN '$awal' AND '$akhir'")->get()->getResultArray();
+        $query2 = $this->builder()->select('tanggal, keterangan, dk, jumlah, harga, fk_idbrg')->where("tanggal BETWEEN '$awal' AND '$akhir'")->get()->getResultArray();
+        $sumAllDeb = 0;
+        $sumAllKre = 0;
         foreach ($query2 as $i => $q) {
-            $total = $q['jumlah'] * $q['harga'] * (($q['dk'] == 'D') ? 1 : -1);
-            $saldoNow = $saldo + $total;
+            $jumlah = (is_null($q['fk_idbrg'])) ? 1 : $q['jumlah'];
+            // $total = $jumlah * $q['harga'] * (($q['dk'] == 'D') ? 1 : -1);
+            $total = $jumlah * $q['harga'];
+            if ($q['dk'] == 'D') {
+                $sumAllDeb += $total;
+            } else {
+                $sumAllKre += $total;
+            }
+            // $saldoNow = $saldo + $total;
+            $saldoNow = (($q['dk'] == 'D') ? ($saldo + $total) : ($saldo - $total));
             $saldo = $saldoNow;
+
+            // Configure Keterangan
+            if (is_null($q['fk_idbrg'])) {
+                $ket = $q['keterangan'];
+            } else {
+                $idbar = $q['fk_idbrg'];
+                $nmbar = $brgModel->builder()->select('nama')->where('idbrg', $idbar)->get()->getResultArray()[0]['nama'];
+                $ket = $nmbar;
+            }
             $query2[$i]['tanggal'] = date_format(date_create($q['tanggal']), "d-M-Y");
-            $query2[$i]['total'] = numfmt_format($currencyfmt, $total);
-            $query2[$i]['saldo'] = numfmt_format($currencyfmt, $saldoNow);
+            $query2[$i]['ket'] = $ket;
+            $query2[$i]['total2'] = numfmt_format($currencyfmt, $total);
+            $query2[$i]['saldo2'] = numfmt_format($currencyfmt, $saldoNow);
         }
+        $res['totDeb'] = $sumAllDeb;
+        $res['totKre'] = $sumAllKre;
+        $res['saldoN'] = $saldo;
         $res['data'] = $query2;
-        // dd($res);
         return $res;
     }
 }

@@ -60,6 +60,7 @@ class Auth extends BaseController
                     'sesskey' => $key
                 ], 3600);
                 session()->set('ann', date('Y'));
+                session()->set('monyear', date('Y-m'));
                 return redirect()->to(base_url('/'));
             }
         }

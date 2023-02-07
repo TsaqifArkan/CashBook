@@ -30,11 +30,14 @@
                 <span>Jual/Beli Barang</span>
             </a>
         </div>
-        <div class="col-6 text-center">
-            <a href="<?= base_url('jurnal/lainnya'); ?>" class="btn btn-success">
+        <div class="col-6 d-flex justify-content-center">
+            <!-- Button trigger modal -->
+            <button type="button"
+                class="btn btn-success addOtherTrans justify-content-between align-items-center"
+                data-bs-target="#modalTambahOther">
                 <span class="me-1"><i class="fa-solid fa-fw fa-circle-plus"></i></span>
                 <span>Transaksi Lainnya</span>
-            </a>
+            </button>
         </div>
     </div>
 
@@ -86,6 +89,7 @@
     </div>
 </div>
 <div class="viewModalEditTrans" style="display: none;"></div>
+<div class="viewModalAddOther" style="display: none;"></div>
 <script>
     $('.tanggal').change(function () {
         $('.sectiondatajurnal').html('');
@@ -106,6 +110,26 @@
                 tab.document.write(xhr.responseText); // where 'html' is a variable containing your HTML
                 tab.document.close(); // to finish loading the page
             }
+        });
+    });
+
+    $(document).ready(function () {
+        $('.addOtherTrans').click(function(e) {
+            e.preventDefault();
+            $.ajax({
+                url: "<?= base_url('jurnal/formaddother'); ?>",
+                dataType: "JSON",
+                success: function (response) {
+                    $('.viewModalAddOther').html(response.data).show();
+                    $('#modalAddOther').modal('show');
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    // alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
+                    var tab = window.open('about:blank', '_blank');
+                    tab.document.write(xhr.responseText); // where 'html' is a variable containing your HTML
+                    tab.document.close(); // to finish loading the page
+                }
+            });
         });
     });
 </script>

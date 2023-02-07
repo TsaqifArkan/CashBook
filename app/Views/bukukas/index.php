@@ -32,31 +32,24 @@
                     </div>
                     <div class="row justify-content-around">
                         <div class="col-3">
-                            <label for="awal">Tanggal Awal</label>
+                            <label class="mb-1" for="awal">Tanggal Awal</label>
                             <input type="date" class="form-control mb-3 tanggal" id="awal" value="<?= $now; ?>">
                         </div>
                         <div class="col-3">
-                            <label for="akhir">Tanggal Akhir</label>
+                            <label class="mb-1" for="akhir">Tanggal Akhir</label>
                             <input type="date" class="form-control mb-3 tanggal" id="akhir" value="<?= $now; ?>">
+                        </div>
+                        <div class="col-3 justify-content-center">
+                            <label class="d-block mb-1" for="cetak">Cetak Buku Kas</label>
+                            <a href="<?= base_url('bukukas/print') . '/' . $now . '/' . $now; ?>" type="button" class="btn btn-primary printBukuKas" target="_blank">
+                                <i class="fa-solid fa-fw fa-print me-3"></i>Print</a>
                         </div>
                     </div>
                 </div>
                 <div class="card-body p-4">
                     <div class="table-responsive">
-                        <table class="table table-bordered table-hover" id="dataTable-Bukukas">
-                            <thead class="ave-bg-th">
-                                <tr class="text-center">
-                                    <th class="text-uppercase fw-bold head-no">No</th>
-                                    <th class="text-uppercase fw-bold">Tanggal</th>
-                                    <th class="text-uppercase fw-bold">Keterangan</th>
-                                    <th class="text-uppercase fw-bold">Pemasukan</th>
-                                    <th class="text-uppercase fw-bold">Pengeluaran</th>
-                                    <th class="text-uppercase fw-bold">Saldo</th>
-                                </tr>
-                            </thead>
-                            <tbody class="sectiondatabukukas">
-                                <?= view('bukukas/tablebukukas', $data); ?>
-                            </tbody>
+                        <table class="table table-bordered table-hover sectiondatabukukas" id="dataTable-Bukukas">
+                            <?= view('bukukas/tablebukukas', $data); ?>
                         </table>
                     </div>
                 </div>
@@ -66,13 +59,17 @@
 </div>
 <script>
     $('.tanggal').change(function () {
+        const loc = '<?= base_url('bukukas/print') . '/'; ?>';
+        let awal = $('#awal').val();
+        let akhir = $('#akhir').val();
+        $('.printBukuKas')[0].href = loc+awal+'/'+akhir;
         $('.sectiondatabukukas').html('');
         $.ajax({
             method: "POST",
             url: "<?= base_url('bukukas/getData'); ?>",
             data: {
-                awal: $('#awal').val(),
-                akhir: $('#akhir').val()
+                awal: awal,
+                akhir: akhir
             },
             dataType: "JSON",
             success: function (response) {
@@ -86,5 +83,29 @@
             }
         });
     });
+
+    // $(document).ready(function () {
+    //     $('.printBukuKas').click(function(e){
+    //         e.preventDefault();
+    //         $.ajax({
+    //             method: "POST",
+    //             url: "<?php // echo base_url('bukukas/print'); ?>",
+    //             data: {
+    //                 awal: $('#awal').val(),
+    //                 akhir: $('#akhir').val()
+    //             },
+    //             dataType: "JSON",
+    //             success: function (response) {
+                    
+    //             },
+    //             error: function (xhr, ajaxOptions, thrownError) {
+    //                 // alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
+    //                 var tab = window.open('about:blank', '_blank');
+    //                 tab.document.write(xhr.responseText); // where 'html' is a variable containing your HTML
+    //                 tab.document.close(); // to finish loading the page
+    //             }
+    //         });
+    //     });
+    // });
 </script>
 <?= $this->endSection(); ?>
