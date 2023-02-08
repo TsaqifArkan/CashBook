@@ -355,40 +355,65 @@ class Jurnal extends BaseController
             $ketPost = $this->request->getPost('keterangan');
 
             if (!is_null($idbrgPost)) {
-                // Get Mutasi and Jumlah Before Update
-                $dataDB = $this->jurnalModel->builder()->select('dk, jumlah')->where('idjurnal', $idJurnalPost)->get()->getResultArray()[0];
+                // Get Mutasi, Jumlah, FKIDBRG Before Update
+                $dataDB = $this->jurnalModel->builder()->select('dk, jumlah, fk_idbrg')->where('idjurnal', $idJurnalPost)->get()->getResultArray()[0];
                 $mutDB = $dataDB['dk'];
                 $jmlDB = $dataDB['jumlah'];
+                $fkidDB = $dataDB['fk_idbrg'];
 
                 // Configure Stok Barang
-                // Misal mutDB = D, mutPost = K, jmlDB = 8, jmlPost = 10
-                // ex2 : mutDB = K, mutPost = K, jmlDB = 8, jmlPost = 5
-                // $ruleJml = '';
-                if ($mutDB != $mutPost || $jmlDB != $jmlPost) {
-                    // $stokBrg = $stokPost + $jmlPost * (($mutPost == 'D') ? 1 : -1);
-                    if ($mutDB != $mutPost) {
-                        if ($mutPost == 'D') {
-                            $stokBrg = $stokPost - $jmlDB;
-                            $ruleJml = "required|greater_than[0]|numeric|less_than_equal_to[$stokBrg]";
-                            $stokNow = $stokPost - $jmlDB - $jmlPost;
-                        } else { // Mutasi = 'K'
-                            $stokBrg = 0;
-                            $stokNow = $stokPost + $jmlDB + $jmlPost;
+                if ($idbrgPost != $fkidDB || $mutPost != $mutDB || $jmlPost != $jmlDB) {
+                    if ($idbrgPost != $fkidDB) {
+                        $stkbrgDB = $this->barangModel->builder()->select('stok')->where('idbrg', $fkidDB)->get()->getResultArray()[0]['stok'];
+                        if ($mutPost != $mutDB) {
+                            if ($mutPost == 'D') { // $mutDB == 'K'
+                                // $stokBrg = (($stokPost - $jmlPost) < 0) ? $stokPost : ($stokPost - $jmlPost);
+                                $stokBrg = $stokPost;
+                                $ruleJml = "required|greater_than[0]|numeric|less_than_equal_to[$stokBrg]";
+                                $stokNow = $stokPost - $jmlPost;
+                                $stokBrgElse = $stkbrgDB - $jmlDB;
+                            } else { // $mutPost == 'K' ($mutDB == 'D')
+                                $stokBrg = 0;
+                                $ruleJml = "required|greater_than[0]|numeric";
+                                $stokNow = $stokPost + $jmlPost;
+                                $stokBrgElse = $stkbrgDB + $jmlDB;
+                            }
+                        } else { // $mutPost == $mutDB atau $jmlDB != $jmlPost
+                            if ($mutPost == 'D') { // $mutDB == 'D'
+                                $stokBrg = $stokPost;
+                                $ruleJml = "required|greater_than[0]|numeric|less_than_equal_to[$stokBrg]";
+                                $stokNow = $stokPost - $jmlPost;
+                                $stokBrgElse = $stkbrgDB + $jmlDB;
+                            } else { // $mutPost == 'K' ($mutDB == 'K')
+                                $stokBrg = 0;
+                                $ruleJml = "required|greater_than[0]|numeric";
+                                $stokNow = $stokPost + $jmlPost;
+                                $stokBrgElse = $stkbrgDB - $jmlDB;
+                            }
                         }
-                    } else { // $jmlDB != $jmlPost
-                        if ($mutPost == 'D') {
-                            $stokBrg = $stokPost + $jmlDB;
-                            $ruleJml = "required|greater_than[0]|numeric|less_than_equal_to[$stokBrg]";
-                            $stokNow = $stokPost + $jmlDB - $jmlPost;
-                        } else { // Mutasi = 'K'
-                            $stokBrg = 0;
-                            $stokNow = $stokPost - $jmlDB + $jmlPost;
+                    } else { // $idbrgPost == $fkidDB
+                        if ($mutPost != $mutDB) {
+                            if ($mutPost == 'D') {
+                                $stokBrg = $stokPost - $jmlDB;
+                                $ruleJml = "required|greater_than[0]|numeric|less_than_equal_to[$stokBrg]";
+                                $stokNow = $stokPost - $jmlDB - $jmlPost;
+                            } else { // Mutasi = 'K'
+                                $stokBrg = 0;
+                                $stokNow = $stokPost + $jmlDB + $jmlPost;
+                                $ruleJml = "required|greater_than[0]|numeric";
+                            }
+                        } else { // $mutPost == $mutDB atau $jmlDB != $jmlPost
+                            if ($mutPost == 'D') {
+                                $stokBrg = $stokPost + $jmlDB;
+                                $ruleJml = "required|greater_than[0]|numeric|less_than_equal_to[$stokBrg]";
+                                $stokNow = $stokPost + $jmlDB - $jmlPost;
+                            } else { // Mutasi = 'K'
+                                $stokBrg = 0;
+                                $stokNow = $stokPost - $jmlDB + $jmlPost;
+                                $ruleJml = "required|greater_than[0]|numeric";
+                            }
                         }
                     }
-                } else {
-                    $ruleJml = 'permit_empty';
-                    $stokNow = $stokPost;
-                    $stokBrg = $stokPost;
                 }
                 $ruleBrg = 'required';
                 $ruleKet = 'permit_empty';
@@ -399,7 +424,6 @@ class Jurnal extends BaseController
                 $stokBrg = 0;
             }
 
-            // dd($stokBrg, $stokNow);
             $valid = $this->validate([
                 'tanggal' => [
                     'label' => 'Tanggal',
@@ -476,6 +500,9 @@ class Jurnal extends BaseController
                 // Update Stok Barang on DB
                 if (!is_null($idbrgPost)) {
                     $this->barangModel->update($idbrgPost, ['stok' => $stokNow]);
+                    if ($idbrgPost != $fkidDB) {
+                        $this->barangModel->update($fkidDB, ['stok' => $stokBrgElse]);
+                    }
                 }
                 $msg['flashData'] = 'Data transaksi berhasil diupdate!';
             }

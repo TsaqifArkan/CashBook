@@ -568,3 +568,52 @@ JURNAL.PHP (CONTROLLER)
         <input type="month" class="form-control tanggal" id="bulan"
             value="<?php //echo $now; ?>">
     </div> -->
+
+<!-- BACKUP FUNC saveEdit() JURNAL.PHP 09/02/2023 00.30 -->
+    // Misal mutDB = D, mutPost = K, jmlDB = 8, jmlPost = 10
+    // ex2 : mutDB = K, mutPost = K, jmlDB = 8, jmlPost = 5
+    // $ruleJml = '';
+    // if ($mutDB != $mutPost || $jmlDB != $jmlPost) {
+    //     // $stokBrg = $stokPost + $jmlPost * (($mutPost == 'D') ? 1 : -1);
+    //     if ($mutDB != $mutPost) {
+    //         if ($mutPost == 'D') {
+    //             $stokBrg = $stokPost - $jmlDB;
+    //             $ruleJml = "required|greater_than[0]|numeric|less_than_equal_to[$stokBrg]";
+    //             $stokNow = $stokPost - $jmlDB - $jmlPost;
+    //         } else { // Mutasi = 'K'
+    //             $stokBrg = 0;
+    //             $stokNow = $stokPost + $jmlDB + $jmlPost;
+    //             $ruleJml = "required|greater_than[0]|numeric";
+    //         }
+    //     } else { // $jmlDB != $jmlPost
+    //         if ($mutPost == 'D') {
+    //             $stokBrg = $stokPost + $jmlDB;
+    //             $ruleJml = "required|greater_than[0]|numeric|less_than_equal_to[$stokBrg]";
+    //             $stokNow = $stokPost + $jmlDB - $jmlPost;
+    //         } else { // Mutasi = 'K'
+    //             $stokBrg = 0;
+    //             $stokNow = $stokPost - $jmlDB + $jmlPost;
+    //             $ruleJml = "required|greater_than[0]|numeric";
+    //         }
+    //     }
+    // } else { // antara namabrg tetep sama atau beda (dg jml/jenmut sama pastinya)
+    //     if ($fkidDB != $idbrgPost) {
+    //         $stkbrgDB = $this->barangModel->builder()->select('stok')->where('idbrg', $fkidDB)->get()->getResultArray()[0]['stok'];
+    //         if ($mutPost == 'D') {
+    //             $stokBrg = $stokPost - $jmlPost;
+    //             $ruleJml = "required|greater_than[0]|numeric|less_than_equal_to[$stokBrg]";
+    //             $stokNow = $stokBrg;
+    //             $stokBrgElse = $stkbrgDB + $jmlPost;
+    //             dd($stokBrg, $stokNow, $stokBrgElse);
+    //         } else {
+    //             $stokBrg = $stokPost + $jmlPost;
+    //             $ruleJml = "required|greater_than[0]|numeric";
+    //             $stokNow = $stokBrg;
+    //             $stokBrgElse = $stkbrgDB - $jmlPost;
+    //         }
+    //     } else {
+    //         $stokBrg = $stokPost;
+    //         $ruleJml = "required|greater_than[0]|numeric";
+    //         $stokNow = $stokPost;
+    //     }
+    // }

@@ -25,9 +25,7 @@
 
     <div class="alert bgmainalert" role="alert">
         <p class="mb-1"><i class="fa-solid fa-lightbulb me-1"></i>
-        Tombol <b>Jual/Beli Barang</b> digunakan untuk menambah transaksi pemasukan dan pengeluaran barang.</p>
-        <p class="mb-1"><i class="fa-solid fa-lightbulb me-1"></i>
-        Tombol <b>Transaksi Lainnya</b> digunakan untuk menambah transaksi diluar jual beli barang.</p>
+        Tombol <b>Jual/Beli Barang</b> digunakan untuk menambah transaksi pemasukan dan pengeluaran barang. Tombol <b>Transaksi Lainnya</b> digunakan untuk menambah transaksi diluar jual beli barang.</p>
         <p class=""><i class="fa-solid fa-lightbulb me-1"></i>
         <strong>Perhatian!</strong> Data yang ditampilkan di <b>Jurnal</b> adalah data harian.</p>
     </div>
