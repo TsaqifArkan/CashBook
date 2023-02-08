@@ -11,7 +11,7 @@ class JurnalModel extends Model
     protected $primaryKey = 'idjurnal';
     protected $returnType = 'array';
     protected $useSoftDeletes = false;
-    protected $allowedFields = ['tanggal', 'keterangan', 'dk', 'jumlah', 'harga', 'notrans', 'fk_idbrg'];
+    protected $allowedFields = ['tanggal', 'keterangan', 'dk', 'jumlah', 'harga', 'fk_idbrg'];
     protected $useTimestamps = true;
     protected $dateFormat = 'datetime';
     protected $createdField = 'created_at';

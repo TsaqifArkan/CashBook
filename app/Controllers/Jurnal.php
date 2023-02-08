@@ -3,10 +3,8 @@
 namespace App\Controllers;
 
 use App\Models\BarangModel;
-// use App\Models\BukukasModel;
 use App\Models\JurnalModel;
 use App\Models\SatuanModel;
-
 
 class Jurnal extends BaseController
 {
@@ -19,7 +17,6 @@ class Jurnal extends BaseController
         $this->builder = $this->db->table('jurnal');
         $this->barangModel = new BarangModel();
         $this->satuanModel = new SatuanModel();
-        // $this->bukukasModel = new BukukasModel();
     }
 
     public function index()
@@ -73,11 +70,6 @@ class Jurnal extends BaseController
         $stokBrg = 0;
         if (!empty($idbrgPost)) {
             $stokBrg = $this->barangModel->find($idbrgPost)['stok'];
-            // if ($jmlBrg > $stokBrg) {
-            //     $val = $jmlBrg - $stokBrg;
-            // } else {
-            //     $val = $jmlBrg;
-            // }
         }
 
         if (!empty($tglPost) && !empty($mutPost) && !empty($hargaPost) && (!empty($idbrgPost) || (!empty($ketPost))) && (!empty($idbrgPost) ? !empty($jmlPost) : true)) {
@@ -86,23 +78,8 @@ class Jurnal extends BaseController
             if (isset($arrayPost)) {
                 $stokBrg = $arrayPost['stok'];
             }
-            // if (!empty($jmlPost)) {
-            //     if ($mutPost == 'D') {
-            //         $stokBrg -= $jmlPost;
-            //     } else {
-            //         $stokBrg += $jmlPost;
-            //     }
-            // }
         }
-
-        // // dd($_POST, $arrayPost);
-        // $idBrg = $this->request->getPost('barang');
-        // $dkOpt = $this->request->getPost('mutasi');
-
-        // // Checking stok barang
         $ruleJml = '';
-        // $jmlBrg = 0;
-        // $val = 0;
 
         if ($mutPost == 'D') {
             $ruleJml .= "|less_than_equal_to[$stokBrg]";
@@ -179,19 +156,7 @@ class Jurnal extends BaseController
         // Fetch data from POST
         $dataJSON = $this->request->getPost('successdata');
         $arrayPost = json_decode($dataJSON, true);
-        // Array for viewing data in main table - DEPRC since now redirect
-        // $kodeArr = [];
-        // $akunArr = [];
 
-        // Preparing Array to insert into DB
-        // Check whether there's a data in Jurnal Table - Deprec since 06/02/2023 12.30
-        // $maxNum = $this->jurnalModel->builder()->selectMax('notrans', 'maxNo')->get()->getResultArray()[0]['maxNo'];
-        // $numData = $this->jurnalModel->builder()->selectCount("idjurnal", 'jmlDat')->get()->getResultArray()[0]['jmlDat'];
-        // if ($maxNum == '' || $maxNum == null || !isset($maxNum)) {
-        //     $noTrans = 1;
-        // } else {
-        //     $noTrans = $maxNum + 1;
-        // }
         $insertData = [];
         foreach ($arrayPost as $d) {
             $idBrg = $d['barang'];
@@ -210,22 +175,11 @@ class Jurnal extends BaseController
                 'fk_idbrg' => $d['barang']
             ];
             array_push($insertData, $arr);
-            // This one is for main table
-            // $query = $this->akunModel->builder()->select('kode, nama')->where('idakun', $d['idakun'])->get()->getResultArray()[0];
-            // array_push($kodeArr, $query['kode']);
-            // array_push($akunArr, $query['nama']);
         }
-
         // Insert into DB
         $this->jurnalModel->insertBatch($insertData);
-        // $data['data'] = $arrayPost;
-        // $data['kode'] = $kodeArr;
-        // $data['akun'] = $akunArr;
-        // return view('jurnal/index', $data);
-
         // Creating FlashData Data Succesfully Inserted
         session()->setFlashdata('msg', 'Data transaksi berhasil disimpan.');
-
         return redirect()->to(base_url('jurnal'));
     }
 
@@ -293,23 +247,6 @@ class Jurnal extends BaseController
         }
     }
 
-    // public function edit($notra = 0)
-    // {
-    //     $data['title'] = 'Edit Transaksi';
-    //     $query = $this->jurnalModel->builder()->select('*')->where('notrans', $notra)->get()->getResultArray();
-
-    //     foreach ($query as $i => $q) {
-    //         $idbrg = $q['fk_idbrg'];
-    //         // Get data Barang from DB
-    //         $dataBrg = $this->barangModel->builder()->select('nama, fk_idsatuan')->where('idbrg', $idbrg)->get()->getResultArray()[0];
-    //         $dataSat = $this->satuanModel->builder()->select('nama')->where('idsatuan', $dataBrg['fk_idsatuan'])->get()->getResultArray()[0];
-    //         $query[$i]['namaBar'] = $dataBrg['nama'];
-    //         $query[$i]['namaSat'] = $dataSat['nama'];
-    //     }
-    //     $data['data'] = $query;
-    //     return view('jurnal/indexedit', $data);
-    // }
-
     public function formEdit()
     {
         if ($this->request->isAJAX()) {
@@ -362,58 +299,22 @@ class Jurnal extends BaseController
                 $fkidDB = $dataDB['fk_idbrg'];
 
                 // Configure Stok Barang
+                $ruleJml = "required|greater_than[0]|numeric";
                 if ($idbrgPost != $fkidDB || $mutPost != $mutDB || $jmlPost != $jmlDB) {
                     if ($idbrgPost != $fkidDB) {
                         $stkbrgDB = $this->barangModel->builder()->select('stok')->where('idbrg', $fkidDB)->get()->getResultArray()[0]['stok'];
-                        if ($mutPost != $mutDB) {
-                            if ($mutPost == 'D') { // $mutDB == 'K'
-                                // $stokBrg = (($stokPost - $jmlPost) < 0) ? $stokPost : ($stokPost - $jmlPost);
-                                $stokBrg = $stokPost;
-                                $ruleJml = "required|greater_than[0]|numeric|less_than_equal_to[$stokBrg]";
-                                $stokNow = $stokPost - $jmlPost;
-                                $stokBrgElse = $stkbrgDB - $jmlDB;
-                            } else { // $mutPost == 'K' ($mutDB == 'D')
-                                $stokBrg = 0;
-                                $ruleJml = "required|greater_than[0]|numeric";
-                                $stokNow = $stokPost + $jmlPost;
-                                $stokBrgElse = $stkbrgDB + $jmlDB;
-                            }
-                        } else { // $mutPost == $mutDB atau $jmlDB != $jmlPost
-                            if ($mutPost == 'D') { // $mutDB == 'D'
-                                $stokBrg = $stokPost;
-                                $ruleJml = "required|greater_than[0]|numeric|less_than_equal_to[$stokBrg]";
-                                $stokNow = $stokPost - $jmlPost;
-                                $stokBrgElse = $stkbrgDB + $jmlDB;
-                            } else { // $mutPost == 'K' ($mutDB == 'K')
-                                $stokBrg = 0;
-                                $ruleJml = "required|greater_than[0]|numeric";
-                                $stokNow = $stokPost + $jmlPost;
-                                $stokBrgElse = $stkbrgDB - $jmlDB;
-                            }
-                        }
+                        $stokBrg = ($mutPost == 'D') ? $stokPost : 0;
+                        $ruleJml .= ($mutPost == 'D') ? "|less_than_equal_to[$stokBrg]" : "";
+                        $stokNow = $stokPost + $jmlPost * ($mutPost == 'D' ? -1 : 1);
+                        $stokBrgElse = $stkbrgDB + $jmlDB * ($mutPost == 'D' ? ($mutPost != $mutDB ? -1 : 1) : ($mutPost != $mutDB ? 1 : -1));
                     } else { // $idbrgPost == $fkidDB
-                        if ($mutPost != $mutDB) {
-                            if ($mutPost == 'D') {
-                                $stokBrg = $stokPost - $jmlDB;
-                                $ruleJml = "required|greater_than[0]|numeric|less_than_equal_to[$stokBrg]";
-                                $stokNow = $stokPost - $jmlDB - $jmlPost;
-                            } else { // Mutasi = 'K'
-                                $stokBrg = 0;
-                                $stokNow = $stokPost + $jmlDB + $jmlPost;
-                                $ruleJml = "required|greater_than[0]|numeric";
-                            }
-                        } else { // $mutPost == $mutDB atau $jmlDB != $jmlPost
-                            if ($mutPost == 'D') {
-                                $stokBrg = $stokPost + $jmlDB;
-                                $ruleJml = "required|greater_than[0]|numeric|less_than_equal_to[$stokBrg]";
-                                $stokNow = $stokPost + $jmlDB - $jmlPost;
-                            } else { // Mutasi = 'K'
-                                $stokBrg = 0;
-                                $stokNow = $stokPost - $jmlDB + $jmlPost;
-                                $ruleJml = "required|greater_than[0]|numeric";
-                            }
-                        }
+                        $stokBrg = ($mutPost == 'D') ? ($stokPost + $jmlDB * ($mutPost != $mutDB ? -1 : 1)) : 0;
+                        $ruleJml .= ($mutPost == 'D') ? "|less_than_equal_to[$stokBrg]" : "";
+                        $stokNow = $stokPost + $jmlDB * ($mutPost == 'D' ? ($mutPost != $mutDB ? -1 : 1) : ($mutPost != $mutDB ? 1 : -1)) + $jmlPost * ($mutPost == 'D' ? -1 : 1);
                     }
+                } else {
+                    $stokBrg = $stokPost;
+                    $stokNow = $stokBrg;
                 }
                 $ruleBrg = 'required';
                 $ruleKet = 'permit_empty';
@@ -527,28 +428,6 @@ class Jurnal extends BaseController
             }
             // Delete 1 row data
             $this->jurnalModel->delete($idjur);
-            $msg['flashData'] = 'Data transaksi berhasil dihapus.';
-            echo json_encode($msg);
-        }
-    }
-
-    public function deleteAll()
-    {
-        if ($this->request->isAJAX()) {
-            $notra = $this->request->getPost('notra');
-            // Get all barang from transaksi
-            $arrBar = $this->jurnalModel->builder()->select('dk,jumlah,fk_idbrg')->where('notrans', $notra)->get()->getResultArray();
-            foreach ($arrBar as $i => $d) {
-                $idBrg = $d['fk_idbrg'];
-                $jmlBrg = $d['jumlah'];
-                $mutasi = $d['dk'];
-                $stokBrg = $this->barangModel->builder()->select('stok')->where('idbrg', $idBrg)->get()->getResultArray()[0]['stok'];
-                $stokNow = $stokBrg + ($jmlBrg * ($mutasi == 'D' ? 1 : -1));
-                $this->barangModel->update($idBrg, ['stok' => $stokNow]);
-            }
-            // Delete 1 or more row data
-            $this->db->query("DELETE FROM jurnal WHERE notrans = $notra");
-            // $this->jurnalModel->builder()->deleteBatch()
             $msg['flashData'] = 'Data transaksi berhasil dihapus.';
             echo json_encode($msg);
         }

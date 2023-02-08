@@ -4,7 +4,6 @@ namespace App\Controllers;
 
 use App\Models\AdminModel;
 use App\Models\BarangModel;
-// use App\Models\BukukasModel;
 use App\Models\JurnalModel;
 use App\Models\SatuanModel;
 
@@ -15,9 +14,7 @@ class Bukukas extends BaseController
 
     public function __construct()
     {
-        // $this->bukukasModel = new BukukasModel();
         $this->db = \Config\Database::connect();
-        // $this->builder = $this->db->table('bukukas');
         $this->jurnalModel = new JurnalModel();
         $this->barangModel = new BarangModel();
         $this->satuanModel = new SatuanModel();
@@ -49,7 +46,6 @@ class Bukukas extends BaseController
             // $data['data'] = $data;
             $data['currfmt'] = $this->currencyfmt;
             $msg['data'] = view('bukukas/tablebukukas', $data);
-            // dd($msg);
             echo json_encode($msg);
         }
     }

@@ -570,6 +570,7 @@ JURNAL.PHP (CONTROLLER)
     </div> -->
 
 <!-- BACKUP FUNC saveEdit() JURNAL.PHP 09/02/2023 00.30 -->
+// These block of code works PERFECTLY! Now i'll just try to make it simpler
     // Misal mutDB = D, mutPost = K, jmlDB = 8, jmlPost = 10
     // ex2 : mutDB = K, mutPost = K, jmlDB = 8, jmlPost = 5
     // $ruleJml = '';
@@ -617,3 +618,146 @@ JURNAL.PHP (CONTROLLER)
     //         $stokNow = $stokPost;
     //     }
     // }
+// Backup again as its quite complex
+    // Simplified SECOND
+    // if ($mutPost == 'D') { // $mutDB == 'K'
+    //     $stokBrg = $stokPost;
+    //     $ruleJml = "required|greater_than[0]|numeric|less_than_equal_to[$stokBrg]";
+    //     $stokNow = $stokPost - $jmlPost;
+    //     $stokBrgElse = $stkbrgDB + $jmlDB * ($mutPost != $mutDB ? -1 : 1);
+    // } else { // $mutPost == 'K' ($mutDB == 'D')
+    //     $stokBrg = 0;
+    //     $ruleJml = "required|greater_than[0]|numeric";
+    //     $stokNow = $stokPost + $jmlPost;
+    //     $stokBrgElse = $stkbrgDB + $jmlDB * ($mutPost != $mutDB ? 1 : -1);
+    // }
+
+    // Simplified FIRST
+    // if ($mutPost != $mutDB) {
+    //     if ($mutPost == 'D') { // $mutDB == 'K'
+    //         // $stokBrg = (($stokPost - $jmlPost) < 0) ? $stokPost : ($stokPost - $jmlPost);
+    //         $stokBrg = $stokPost;
+    //         $ruleJml = "required|greater_than[0]|numeric|less_than_equal_to[$stokBrg]";
+    //         $stokNow = $stokPost - $jmlPost;
+    //         $stokBrgElse = $stkbrgDB - $jmlDB;
+    //     } else { // $mutPost == 'K' ($mutDB == 'D')
+    //         $stokBrg = 0;
+    //         $ruleJml = "required|greater_than[0]|numeric";
+    //         $stokNow = $stokPost + $jmlPost;
+    //         $stokBrgElse = $stkbrgDB + $jmlDB;
+    //     }
+    // } else { // $mutPost == $mutDB atau $jmlDB != $jmlPost
+    //     if ($mutPost == 'D') { // $mutDB == 'D'
+    //         $stokBrg = $stokPost;
+    //         $ruleJml = "required|greater_than[0]|numeric|less_than_equal_to[$stokBrg]";
+    //         $stokNow = $stokPost - $jmlPost;
+    //         $stokBrgElse = $stkbrgDB + $jmlDB;
+    //     } else { // $mutPost == 'K' ($mutDB == 'K')
+    //         $stokBrg = 0;
+    //         $ruleJml = "required|greater_than[0]|numeric";
+    //         $stokNow = $stokPost + $jmlPost;
+    //         $stokBrgElse = $stkbrgDB - $jmlDB;
+    //     }
+    // }
+// Continuing right after block of code above! (still in the same place - just different cond)
+    // Simplified SECOND
+    // if ($mutPost == 'D') {
+    //     $stokBrg = $stokPost + $jmlDB * ($mutPost != $mutDB ? -1 : 1);
+    //     $ruleJml = "required|greater_than[0]|numeric|less_than_equal_to[$stokBrg]";
+    //     $stokNow = $stokPost + $jmlDB * ($mutPost != $mutDB ? -1 : 1) - $jmlPost;
+    // } else {
+    //     $stokBrg = 0;
+    //     $ruleJml = "required|greater_than[0]|numeric";
+    //     $stokNow = $stokPost + $jmlDB * ($mutPost != $mutDB ? 1 : -1) + $jmlPost;
+    // }
+
+    // Simplified FIRST
+    // if ($mutPost != $mutDB) {
+    //     if ($mutPost == 'D') {
+    //         $stokBrg = $stokPost - $jmlDB;
+    //         $ruleJml = "required|greater_than[0]|numeric|less_than_equal_to[$stokBrg]";
+    //         $stokNow = $stokPost - $jmlDB - $jmlPost;
+    //     } else { // Mutasi = 'K'
+    //         $stokBrg = 0;
+    //         $ruleJml = "required|greater_than[0]|numeric";
+    //         $stokNow = $stokPost + $jmlDB + $jmlPost;
+    //     }
+    // } else { // $mutPost == $mutDB atau $jmlDB != $jmlPost
+    //     if ($mutPost == 'D') {
+    //         $stokBrg = $stokPost + $jmlDB;
+    //         $ruleJml = "required|greater_than[0]|numeric|less_than_equal_to[$stokBrg]";
+    //         $stokNow = $stokPost + $jmlDB - $jmlPost;
+    //     } else { // Mutasi = 'K'
+    //         $stokBrg = 0;
+    //         $ruleJml = "required|greater_than[0]|numeric";
+    //         $stokNow = $stokPost - $jmlDB + $jmlPost;
+    //     }
+    // }
+
+<!-- BACKUP FUNC edit($notra = 0) AND deleteAll() JURNAL.PHP 09/02/2023 02.00 -->
+// This 2 function now DEPRECATED since deletion on Notra Column in Database
+    // public function edit($notra = 0)
+    // {
+    //     $data['title'] = 'Edit Transaksi';
+    //     $query = $this->jurnalModel->builder()->select('*')->where('notrans', $notra)->get()->getResultArray();
+
+    //     foreach ($query as $i => $q) {
+    //         $idbrg = $q['fk_idbrg'];
+    //         // Get data Barang from DB
+    //         $dataBrg = $this->barangModel->builder()->select('nama, fk_idsatuan')->where('idbrg', $idbrg)->get()->getResultArray()[0];
+    //         $dataSat = $this->satuanModel->builder()->select('nama')->where('idsatuan', $dataBrg['fk_idsatuan'])->get()->getResultArray()[0];
+    //         $query[$i]['namaBar'] = $dataBrg['nama'];
+    //         $query[$i]['namaSat'] = $dataSat['nama'];
+    //     }
+    //     $data['data'] = $query;
+    //     return view('jurnal/indexedit', $data);
+    // }
+
+    public function deleteAll()
+    {
+        if ($this->request->isAJAX()) {
+            $notra = $this->request->getPost('notra');
+            // Get all barang from transaksi
+            $arrBar = $this->jurnalModel->builder()->select('dk,jumlah,fk_idbrg')->where('notrans', $notra)->get()->getResultArray();
+            foreach ($arrBar as $i => $d) {
+                $idBrg = $d['fk_idbrg'];
+                $jmlBrg = $d['jumlah'];
+                $mutasi = $d['dk'];
+                $stokBrg = $this->barangModel->builder()->select('stok')->where('idbrg', $idBrg)->get()->getResultArray()[0]['stok'];
+                $stokNow = $stokBrg + ($jmlBrg * ($mutasi == 'D' ? 1 : -1));
+                $this->barangModel->update($idBrg, ['stok' => $stokNow]);
+            }
+            // Delete 1 or more row data
+            $this->db->query("DELETE FROM jurnal WHERE notrans = $notra");
+            // $this->jurnalModel->builder()->deleteBatch()
+            $msg['flashData'] = 'Data transaksi berhasil dihapus.';
+            echo json_encode($msg);
+        }
+    }
+
+<!-- BACKUP FUNC save() JURNAL.PHP 09/02/2023 02.00 -->
+// I move here so that my code become cleaner - NB. This one deprec cause of Notrans now unavailable
+// This one was placed right after getting arrayPost from decoding the JSON message
+    // Array for viewing data in main table - DEPRC since now redirect
+    // $kodeArr = [];
+    // $akunArr = [];
+
+    // Preparing Array to insert into DB
+    // Check whether there's a data in Jurnal Table - Deprec since 06/02/2023 12.30
+    // $maxNum = $this->jurnalModel->builder()->selectMax('notrans', 'maxNo')->get()->getResultArray()[0]['maxNo'];
+    // $numData = $this->jurnalModel->builder()->selectCount("idjurnal", 'jmlDat')->get()->getResultArray()[0]['jmlDat'];
+    // if ($maxNum == '' || $maxNum == null || !isset($maxNum)) {
+    //     $noTrans = 1;
+    // } else {
+    //     $noTrans = $maxNum + 1;
+    // }
+// This one was placed right before the endforeach sign
+    // This one is for main table
+    // $query = $this->akunModel->builder()->select('kode, nama')->where('idakun', $d['idakun'])->get()->getResultArray()[0];
+    // array_push($kodeArr, $query['kode']);
+    // array_push($akunArr, $query['nama']);
+// This one right after insertBatch func
+    // $data['data'] = $arrayPost;
+    // $data['kode'] = $kodeArr;
+    // $data['akun'] = $akunArr;
+    // return view('jurnal/index', $data);
