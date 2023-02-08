@@ -3,17 +3,17 @@
 
 <?php //echo dd($datas); ?>
 
-<div class="alert alert-breadcrumb-ave" role="alert">
+<!-- <div class="alert alert-breadcrumb-ave" role="alert">
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb mb-0 fs-6">
             <li class="breadcrumb-item active" aria-current="page">Barang</li>
         </ol>
     </nav>
-</div>
+</div> -->
 
 <div class="container-fluid">
     <div class="row justify-content-center">
-        <div class="col-8">
+        <div class="col-lg-9">
             <!-- Page Heading -->
             <div class="row my-2">
                 <div class="col">
@@ -21,11 +21,20 @@
                 </div>
             </div>
 
+            <div class="alert bgmainalert" role="alert">
+                <p class="mb-1"><i class="fa-solid fa-lightbulb me-1"></i>
+                <strong>Perhatian!</strong> Penghapusan data suatu barang akan menghapus seluruh informasi terkait barang tersebut!
+                Riwayat transaksi barang yang telah tersimpan di <b>Jurnal</b> maupun <b>Bukukas</b> tidak akan terhapus.</p>
+                <p><i class="fa-solid fa-lightbulb me-1"></i>
+                <strong>Perhatian!</strong> Seluruh transaksi yang menggunakan nama barang termasuk ke dalam jenis <b>Transaksi Jual/Beli</b>.
+                Penghapusan data suatu barang akan mengubah jenis transaksinya menjadi <b>Transaksi Lainnya</b> secara otomatis.</p>
+            </div>
+
             <div class="row mb-3">
                 <div class="col">
                     <!-- Button trigger modal -->
                     <button type="button"
-                        class="btn btn-success tombolTambahBarang d-flex justify-content-between align-items-center"
+                        class="btn btn-success tombolTambahBarang justify-content-between align-items-center"
                         data-bs-target="#modalTambahBarang">
                         <span class="me-1"><i class="fa-solid fa-fw fa-circle-plus"></i></span>
                         <span>Tambah Data Barang</span>

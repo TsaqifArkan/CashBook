@@ -127,6 +127,17 @@ class Barang extends BaseController
     {
         if ($this->request->isAJAX()) {
             $id = $this->request->getPost('id');
+            $initStokPost = $this->request->getPost('stokAwal');
+            $stokDB = $this->barangModel->builder()->select('stokawal, stok')->where('idbrg', $id)->get()->getResultArray()[0];
+
+            if ($initStokPost != '' || $initStokPost != 0) {
+                if ($initStokPost != $stokDB['stokawal']) {
+                    $stokNow = $stokDB['stok'] - $stokDB['stokawal'] + $initStokPost;
+                } else {
+                    $stokNow = $stokDB['stok'];
+                }
+            }
+
             $valid = $this->validate([
                 'nama' => [
                     'label' => 'Nama Barang',
@@ -171,6 +182,7 @@ class Barang extends BaseController
                 $updatedData = [
                     'nama' => $this->request->getPost('nama'),
                     'stokawal' => $this->request->getPost('stokAwal'),
+                    'stok' => $stokNow,
                     'hpp' => $this->request->getPost('hpp'),
                     'fk_idsatuan' => $this->request->getPost('satuan')
                 ];
@@ -185,6 +197,12 @@ class Barang extends BaseController
     {
         if ($this->request->isAJAX()) {
             $id = $this->request->getPost('id');
+            // Set Stok to Null on Jurnal Table
+            // $brgOnJur = $this->jurnalModel->builder()->select('idjurnal')->where('fk_idbrg', $id)->get()->getResultArray();
+            // foreach ($brgOnJur as $b) {
+            //     $upd = ['jumlah' => null];
+            //     $this->jurnalModel->update($b['idjurnal'], $upd);
+            // }
             // Delete 1 row data
             $this->barangModel->delete($id);
             $msg['flashData'] = 'Data barang berhasil dihapus.';
@@ -227,6 +245,7 @@ class Barang extends BaseController
             $detail[$i]['pengeluaran'] = $pengeluaran;
             $detail[$i]['saldo'] = $saldo;
         }
+        $data['now'] = date('Y-m');
         $data['data'] = $detail;
         return view('barang/detail', $data);
     }

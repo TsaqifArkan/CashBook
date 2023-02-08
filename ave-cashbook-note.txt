@@ -561,3 +561,10 @@ JURNAL.PHP (CONTROLLER)
             <span>Transaksi Lainnya</span>
         </a>
     </div>
+
+<!-- BULAN DATE RANGE (DETAIL.PHP) - BARANG 07/02/2023 07.00 -->
+/* NO IMPLEMENT DATE RANGE, USE DATATABLE INSTEAD */
+    <!-- <div class="col-3 text-end">
+        <input type="month" class="form-control tanggal" id="bulan"
+            value="<?php //echo $now; ?>">
+    </div> -->

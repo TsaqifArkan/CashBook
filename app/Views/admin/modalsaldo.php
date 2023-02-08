@@ -9,8 +9,9 @@
             <?= form_open('admin/ubahsaldo', ['class' => 'formUbahSaldo']); ?>
             <div class="modal-body">
                 <div class="alert alert-secondary text-sm" role="alert">
+                    </p><i class="fa-solid fa-lightbulb me-1"></i>
                     Secara default, saldo awal adalah Rp 0.00,-. Silahkan ubah saldo awal kas desa melalui form input
-                    ini!
+                    ini!</p>
                 </div>
                 <?= csrf_field(); ?>
                 <div class="form-group mb-3">

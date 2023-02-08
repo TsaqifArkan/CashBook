@@ -16,9 +16,15 @@
                         <button class="btn btn-warning btn-sm" data-bs-toggle="tooltip" data-bs-placement="bottom"
                             title="Edit" onclick="ubah('<?= esc($data['idsatuan']); ?>')"><i
                                 class="fa-solid fa-pen-to-square"></i></button>
-                        <button class="btn btn-danger btn-sm" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                            title="Hapus" onclick="hapus('<?= esc($data['idsatuan']); ?>')"><i
-                                class="fa-solid fa-trash"></i></button>
+                        <?php if (isset($usedSat[$data['idsatuan']])): ?>
+                            <span class="d-inline-block" tabindex="0" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                title="Satuan masih dipakai">
+                                <button class="btn btn-danger btn-sm" disabled><i class="fa-solid fa-trash"></i></button>
+                            <?php else: ?>
+                                <button class="btn btn-danger btn-sm" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                    title="Hapus" onclick="hapus('<?= esc($data['idsatuan']); ?>')"><i
+                                        class="fa-solid fa-trash"></i></button>
+                            <?php endif; ?>
                     </td>
                 </tr>
             <?php endforeach; ?>

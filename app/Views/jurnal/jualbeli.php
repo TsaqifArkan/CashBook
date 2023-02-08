@@ -1,16 +1,21 @@
 <?= $this->extend('templates/index'); ?>
 <?= $this->section('page-content'); ?>
 
-<div class="alert alert-breadcrumb-ave" role="alert">
+<!-- <div class="alert alert-breadcrumb-ave" role="alert">
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb mb-0 fs-6">
-            <li class="breadcrumb-item"><a class="a-bread-ave" href="<?= base_url('jurnal'); ?>">Jurnal</a></li>
+            <li class="breadcrumb-item"><a class="a-bread-ave" href="<?php // echo base_url('jurnal'); ?>">Jurnal</a></li>
             <li class="breadcrumb-item active" aria-current="page">Jual Beli</li>
         </ol>
     </nav>
-</div>
+</div> -->
 
 <div class="container-fluid">
+
+    <a href="<?=base_url('jurnal'); ?>" type="button" class="btn btn-secondary">
+        <span><i class="fa-solid fa-left-long"></i></span>
+        <span class="ms-2">Kembali</span>
+    </a>
 
     <!-- Page Heading -->
     <div class="row my-2">
@@ -29,6 +34,7 @@
                     </div>
                     <div class="card-body">
                         <div class="alert alert-secondary text-sm" role="alert">
+                            <i class="fa-solid fa-lightbulb me-2"></i>
                             Anda dapat memasukkan lebih dari 1 data pada 1 transaksi
                         </div>
                         <input type="hidden" name="tempdata" id="tdat">
@@ -133,7 +139,7 @@
                     </div>
                     <div class="card-footer text-center">
                         <!-- id="tambah" sudah tidak digunakan lagi -->
-                        <button class="btn btn-primary" id="tambah" type="submit">Tambah</button>
+                        <button class="btn btn-outline-primary" id="tambah" type="submit">Tambah</button>
                     </div>
                 </div>
             </form>
@@ -144,7 +150,7 @@
         <div class="col">
             <div class="card my-2 shadow">
                 <div class="card-header">
-                    <h6 class="m-1">Simpan Transaksi Barang ke Database </h6>
+                    <h6 class="m-1">Simpan Transaksi Barang ke Jurnal</h6>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
@@ -170,7 +176,7 @@
                 <div class="card-footer text-center">
                     <form method="POST" action="<?= base_url() ?>/jurnal/save" id="f2">
                         <input type="hidden" name="successdata" id="sdat">
-                        <button class="btn btn-primary" id="jurnal_simpan">Simpan</button>
+                        <button class="btn btn-outline-primary" id="jurnal_simpan">Simpan</button>
                     </form>
                 </div>
             </div>

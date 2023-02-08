@@ -14,11 +14,16 @@
                 </div>
             </div>
 
+            <div class="alert bgmainalert" role="alert">
+                <p class="mb-1"><i class="fa-solid fa-lightbulb me-1"></i>
+                <strong>Perhatian!</strong> Data suatu <b>Satuan</b> hanya bisa dihapus apabila tidak ada <b>Barang</b> yang menggunakan <b>Satuan</b> tersebut!</p>
+            </div>
+
             <div class="row mb-3">
                 <div class="col">
                     <!-- Button trigger modal -->
                     <button type="button"
-                        class="btn btn-success tombolTambahSatuan d-flex justify-content-between align-items-center"
+                        class="btn btn-success tombolTambahSatuan justify-content-between align-items-center"
                         data-bs-target="#modalTambahSatuan">
                         <span class="me-1"><i class="fa-solid fa-fw fa-circle-plus"></i></span>
                         <span>Tambah Satuan</span>

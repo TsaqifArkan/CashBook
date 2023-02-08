@@ -53,8 +53,8 @@
                                             <div class="row">
                                                 <div class="col text-center">
                                                     <button type="button" class="btn btn-warning" onclick="ubah()">Edit Profil</button>
-                                                    <button type="button" class="btn btn-secondary" onclick="password()">Ubah Password</button>
-                                                    <button type="button" class="btn btn-info" onclick="ubahSaldoAwal()">Ubah Saldo Awal</button>
+                                                    <button type="button" class="btn btn-danger" onclick="password()">Ubah Password</button>
+                                                    <button type="button" class="btn btn-dark" onclick="ubahSaldoAwal()">Ubah Saldo Awal</button>
                                                 </div>
                                             </div>
                                         </div>

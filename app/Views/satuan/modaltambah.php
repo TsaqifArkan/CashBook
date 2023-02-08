@@ -1,6 +1,6 @@
 <!-- Modal -->
 <div class="modal fade" id="modalTambahSatuan" tabindex="-1" aria-labelledby="judulModalSatuan" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
                 <h1 class="modal-title fs-5" id="judulModalSatuan">Tambah Satuan</h1>
@@ -8,6 +8,10 @@
             </div>
             <?= form_open('satuan/tambah', ['class' => 'formSatuan']); ?>
             <div class="modal-body">
+                <div class="alert alert-secondary text-sm" role="alert">
+                    <p><i class="fa-solid fa-lightbulb me-1"></i>
+                        Mohon pastikan tidak menambah nama satuan yang sama dengan yang sudah ada di tabel!</p>
+                </div>
                 <?= csrf_field(); ?>
                 <div class="form-group mb-3">
                     <label for="nama" class="form-label">Nama Satuan</label>

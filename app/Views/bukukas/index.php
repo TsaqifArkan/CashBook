@@ -1,13 +1,13 @@
 <?= $this->extend('templates/index'); ?>
 <?= $this->section('page-content'); ?>
 
-<div class="alert alert-breadcrumb-ave" role="alert">
+<!-- <div class="alert alert-breadcrumb-ave" role="alert">
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb mb-0 fs-6">
             <li class="breadcrumb-item active" aria-current="page">Buku Kas</li>
         </ol>
     </nav>
-</div>
+</div> -->
 
 <div class="container-fluid">
 
@@ -19,6 +19,13 @@
         <div class="col">
             <h1 class="h3 text-gray-800">Buku Kas</h1>
         </div>
+    </div>
+
+    <div class="alert bgmainalert" role="alert">
+        <p class="mb-1"><i class="fa-solid fa-lightbulb me-1"></i>
+        <strong>Perhatian!</strong> Data yang ada di <b>Buku Kas</b> berasal dari transaksi-transaksi yang ditambahkan melalui menu <b>Jurnal</b>. Anda dapat melakukan pengubahan maupun penghapusan terkait datanya melalui menu <b>Jurnal</b>.</p>
+        <p><i class="fa-solid fa-lightbulb me-1"></i>
+        <strong>Perhatian!</strong> Pastikan memilih rentang tanggal terlebih dahulu sebelum mencetak data <b>Buku Kas</b> ke bentuk Excel (.xlsx)!</p>
     </div>
 
     <div class="row">
@@ -39,9 +46,9 @@
                             <label class="mb-1" for="akhir">Tanggal Akhir</label>
                             <input type="date" class="form-control mb-3 tanggal" id="akhir" value="<?= $now; ?>">
                         </div>
-                        <div class="col-3 justify-content-center">
+                        <div class="col-3 justify-content-center text-center">
                             <label class="d-block mb-1" for="cetak">Cetak Buku Kas</label>
-                            <a href="<?= base_url('bukukas/print') . '/' . $now . '/' . $now; ?>" type="button" class="btn btn-primary printBukuKas" target="_blank">
+                            <a href="<?= base_url('bukukas/print') . '/' . $now . '/' . $now; ?>" type="button" class="btn btn-dark printBukuKas" target="_blank">
                                 <i class="fa-solid fa-fw fa-print me-3"></i>Print</a>
                         </div>
                     </div>

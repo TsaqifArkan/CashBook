@@ -2,19 +2,19 @@
 
 namespace App\Controllers;
 
+use App\Models\BarangModel;
 use App\Models\SatuanModel;
-
-
 
 class Satuan extends BaseController
 {
-    protected $satuanModel, $db, $builder;
+    protected $satuanModel, $db, $builder, $brgModel;
 
     public function __construct()
     {
         $this->satuanModel = new SatuanModel();
         $this->db = \Config\Database::connect();
         $this->builder = $this->db->table('satuan');
+        $this->brgModel = new BarangModel();
     }
 
     public function index()
@@ -27,6 +27,14 @@ class Satuan extends BaseController
     {
         if ($this->request->isAJAX()) {
             $data['datas'] = $this->satuanModel->findAll();
+            // Configure Delete Button
+            $fkidsat = $this->brgModel->builder()->select('fk_idsatuan')->groupBy('fk_idsatuan')->get()->getResultArray();
+            $usedSat = [];
+            foreach ($fkidsat as $f) {
+                $usedSat[$f['fk_idsatuan']] = true;
+            }
+            $data['usedSat'] = $usedSat;
+            // dd($fkidsat, $usedSat, $data);
             $msg['data'] = view('satuan/tablesatuan', $data);
             echo json_encode($msg);
         }
@@ -46,9 +54,10 @@ class Satuan extends BaseController
             $valid = $this->validate([
                 'nama' => [
                     'label' => 'Nama Satuan',
-                    'rules' => 'required',
+                    'rules' => 'required|is_unique[satuan.nama]',
                     'errors' => [
-                        'required' => '{field} tidak boleh kosong!'
+                        'required' => '{field} tidak boleh kosong!',
+                        'is_unique' => '{field} sudah terdaftar! {field} tidak boleh sama dengan yang sudah terdaftar'
                     ]
                 ]
             ]);
@@ -84,12 +93,19 @@ class Satuan extends BaseController
     {
         if ($this->request->isAJAX()) {
             $id = $this->request->getPost('id');
+            // Get data from URL POST
+            $namaPost = $this->request->getPost('nama');
+            // Get data from DB
+            $namaDB = $this->satuanModel->builder()->select('nama')->where('idsatuan', $id)->get()->getResultArray()[0]['nama'];
+            // Conditional Rule
+            $rule_nama = ($namaPost == $namaDB) ? 'required' : 'required|is_unique[satuan.nama]';
             $valid = $this->validate([
                 'nama' => [
                     'label' => 'Nama Satuan',
-                    'rules' => 'required',
+                    'rules' => $rule_nama,
                     'errors' => [
-                        'required' => '{field} tidak boleh kosong!'
+                        'required' => '{field} tidak boleh kosong!',
+                        'is_unique' => '{field} sudah terdaftar! {field} tidak boleh sama dengan yang sudah terdaftar'
                     ]
                 ]
             ]);
@@ -101,7 +117,7 @@ class Satuan extends BaseController
                 ];
             } else {
                 $updatedData = [
-                    'nama' => $this->request->getPost('nama')
+                    'nama' => $namaPost
                 ];
                 $this->satuanModel->update($id, $updatedData);
                 $msg['flashData'] = 'Data satuan berhasil diupdate.';

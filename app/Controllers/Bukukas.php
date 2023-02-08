@@ -4,20 +4,20 @@ namespace App\Controllers;
 
 use App\Models\AdminModel;
 use App\Models\BarangModel;
-use App\Models\BukukasModel;
+// use App\Models\BukukasModel;
 use App\Models\JurnalModel;
 use App\Models\SatuanModel;
 
 
 class Bukukas extends BaseController
 {
-    protected $jurnalModel, $db, $builder, $barangModel, $satuanModel, $bukukasModel, $adminModel;
+    protected $jurnalModel, $db, $builder, $barangModel, $satuanModel, $adminModel;
 
     public function __construct()
     {
-        $this->bukukasModel = new BukukasModel();
+        // $this->bukukasModel = new BukukasModel();
         $this->db = \Config\Database::connect();
-        $this->builder = $this->db->table('bukukas');
+        // $this->builder = $this->db->table('bukukas');
         $this->jurnalModel = new JurnalModel();
         $this->barangModel = new BarangModel();
         $this->satuanModel = new SatuanModel();
@@ -60,7 +60,7 @@ class Bukukas extends BaseController
         $id = session('admin_session.id');
 
         // Forming Filename
-        $filename = date('YmdHis') . '_BukuKas_' . $awal . '-' . $akhir . '.xlsx';
+        $filename = date('YmdHis') . '_BukuKas_' . date_format(date_create($awal), 'd-m-Y') . '-' . date_format(date_create($akhir), 'd-m-Y') . '.xlsx';
         // Query - Get Data
         $dataKas = $this->jurnalModel->getBukuKas($id, $awal, $akhir);
         // dd($dataKas);
@@ -103,7 +103,7 @@ class Bukukas extends BaseController
         }
         $title = [
             ['<style height="30" bgcolor="#DDDDDD"><middle><center><b>BUKU KAS BUMDES TLOGOSARI</b></center></middle></style>', null, null, null, null, null],
-            ['<style bgcolor="#DDDDDD"><center><b>PERIODE ' . date_format(date_create($awal), 'd-m-Y') . ' - ' . date_format(date_create($akhir), 'd-m-Y') . '</b></center></style>', null, null, null, null, null],
+            ['<style bgcolor="#DDDDDD"><center><b>PERIODE ' . date_format(date_create($awal), 'd/m/Y') . ' - ' . date_format(date_create($akhir), 'd/m/Y') . '</b></center></style>', null, null, null, null, null],
             [null, null, null, null, null, null]
         ];
         $lenTle = count($title);

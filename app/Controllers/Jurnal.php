@@ -3,14 +3,14 @@
 namespace App\Controllers;
 
 use App\Models\BarangModel;
-use App\Models\BukukasModel;
+// use App\Models\BukukasModel;
 use App\Models\JurnalModel;
 use App\Models\SatuanModel;
 
 
 class Jurnal extends BaseController
 {
-    protected $jurnalModel, $db, $builder, $barangModel, $satuanModel, $bukukasModel;
+    protected $jurnalModel, $db, $builder, $barangModel, $satuanModel;
 
     public function __construct()
     {
@@ -19,7 +19,7 @@ class Jurnal extends BaseController
         $this->builder = $this->db->table('jurnal');
         $this->barangModel = new BarangModel();
         $this->satuanModel = new SatuanModel();
-        $this->bukukasModel = new BukukasModel();
+        // $this->bukukasModel = new BukukasModel();
     }
 
     public function index()
@@ -50,6 +50,7 @@ class Jurnal extends BaseController
         $data['title'] = 'Transaksi Jual Beli';
         // Get data Barang from DB
         $dataBrg = $this->barangModel->builder()->select('idbrg, nama, stok, hpp, fk_idsatuan')->get()->getResultArray();
+        // dd($dataBrg);
         foreach ($dataBrg as $i => $b) {
             $dataSat = $this->satuanModel->builder()->select('nama')->where('idsatuan', $b['fk_idsatuan'])->get()->getResultArray()[0];
             $dataBrg[$i]['namaSat'] = $dataSat['nama'];

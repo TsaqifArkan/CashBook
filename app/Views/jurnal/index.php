@@ -3,13 +3,13 @@
 
 <?php //dd(is_null($data), isset($data), empty($data)); ?>
 
-<div class="alert alert-breadcrumb-ave" role="alert">
+<!-- <div class="alert alert-breadcrumb-ave" role="alert">
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb mb-0 fs-6">
             <li class="breadcrumb-item active" aria-current="page">Jurnal</li>
         </ol>
     </nav>
-</div>
+</div> -->
 
 <div class="container-fluid ">
 
@@ -23,14 +23,21 @@
         </div>
     </div>
 
+    <div class="alert bgmainalert" role="alert">
+        <p class="mb-1"><i class="fa-solid fa-lightbulb me-1"></i>
+        Tombol <b>Jual/Beli Barang</b> digunakan untuk menambah transaksi pemasukan dan pengeluaran barang.</p>
+        <p class="mb-1"><i class="fa-solid fa-lightbulb me-1"></i>
+        Tombol <b>Transaksi Lainnya</b> digunakan untuk menambah transaksi diluar jual beli barang.</p>
+        <p class=""><i class="fa-solid fa-lightbulb me-1"></i>
+        <strong>Perhatian!</strong> Data yang ditampilkan di <b>Jurnal</b> adalah data harian.</p>
+    </div>
+
     <div class="row mb-3">
-        <div class="col-6 text-center">
+        <div class="col">
             <a href="<?= base_url('jurnal/jualbeli'); ?>" class="btn btn-success">
                 <span class="me-1"><i class="fa-solid fa-fw fa-circle-plus"></i></span>
                 <span>Jual/Beli Barang</span>
             </a>
-        </div>
-        <div class="col-6 d-flex justify-content-center">
             <!-- Button trigger modal -->
             <button type="button"
                 class="btn btn-success addOtherTrans justify-content-between align-items-center"
@@ -38,6 +45,9 @@
                 <span class="me-1"><i class="fa-solid fa-fw fa-circle-plus"></i></span>
                 <span>Transaksi Lainnya</span>
             </button>
+        </div>
+        <div class="col">
+            
         </div>
     </div>
 

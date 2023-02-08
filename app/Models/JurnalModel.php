@@ -48,7 +48,19 @@ class JurnalModel extends Model
         $q = $db->query("CALL get_jurnal(DATE('$awal'), DATE('$akhir'))");
         $res = $q->getResultArray();
         foreach ($res as $i => $d) {
-            $jumlah = (is_null($d['fk_idbrg'])) ? 1 : $d['jumlah'];
+            // $jumlah = (is_null($d['fk_idbrg'])) ? 1 : $d['jumlah'];
+            // Non-Ternary Form
+            // if (is_null($d['fk_idbrg'])) {
+            //     if (is_null($d['jumlah'])) {
+            //         $jumlah = 1;
+            //     } else {
+            //         $jumlah = $d['jumlah'];
+            //     }
+            // } else {
+            //     $jumlah = $d['jumlah'];
+            // }
+            // Ternary Form - Same as above
+            $jumlah = (is_null($d['fk_idbrg']) ? (is_null($d['jumlah']) ? 1 : $d['jumlah']) : $d['jumlah']);
             $total = $jumlah * $d['harga'];
             $res[$i]['tanggal'] = date_format(date_create($d['tanggal']), "d-M-Y");
             $res[$i]['total'] = numfmt_format($currencyfmt, $total);
@@ -66,9 +78,10 @@ class JurnalModel extends Model
         // Initial Step
         $saldo = $adminModel->builder()->select('saldoawal')->where('idadmin', $id)->get()->getResultArray()[0]['saldoawal'];
         // Hanya untuk menghitung Saldo Sebelumnya saja! | First Step
-        $query = $this->builder()->select('dk, jumlah, harga, fk_idbrg')->where('tanggal <', $awal)->get()->getResultArray();
+        $query = $this->builder()->select('dk, jumlah, harga, fk_idbrg')->where('tanggal <', $awal)->orderBy('tanggal ASC, idjurnal ASC')->get()->getResultArray();
         foreach ($query as $i => $q) {
-            $jumlah = (is_null($q['fk_idbrg'])) ? 1 : $q['jumlah'];
+            // $jumlah = (is_null($q['fk_idbrg'])) ? 1 : $q['jumlah'];
+            $jumlah = (is_null($q['fk_idbrg']) ? (is_null($q['jumlah']) ? 1 : $q['jumlah']) : $q['jumlah']);
             // $total = $jumlah * $q['harga'] * (($q['dk'] == 'D') ? 1 : -1);
             $total = $jumlah * $q['harga'];
             // $saldoNow = $saldo + $total;
@@ -80,11 +93,12 @@ class JurnalModel extends Model
         $res['saldoA'] = numfmt_format($currencyfmt, $saldo);
 
         // Saldo Date Range | Second Step
-        $query2 = $this->builder()->select('tanggal, keterangan, dk, jumlah, harga, fk_idbrg')->where("tanggal BETWEEN '$awal' AND '$akhir'")->get()->getResultArray();
+        $query2 = $this->builder()->select('tanggal, keterangan, dk, jumlah, harga, fk_idbrg')->where("tanggal BETWEEN '$awal' AND '$akhir'")->orderBy('tanggal ASC, idjurnal ASC')->get()->getResultArray();
         $sumAllDeb = 0;
         $sumAllKre = 0;
         foreach ($query2 as $i => $q) {
-            $jumlah = (is_null($q['fk_idbrg'])) ? 1 : $q['jumlah'];
+            // $jumlah = (is_null($q['fk_idbrg'])) ? 1 : $q['jumlah'];
+            $jumlah = (is_null($q['fk_idbrg']) ? (is_null($q['jumlah']) ? 1 : $q['jumlah']) : $q['jumlah']);
             // $total = $jumlah * $q['harga'] * (($q['dk'] == 'D') ? 1 : -1);
             $total = $jumlah * $q['harga'];
             if ($q['dk'] == 'D') {
